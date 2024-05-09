@@ -1,146 +1,110 @@
+/**
+ * start wave vetices generator infinite
+ * 
+ */
+
 import React, { useState } from 'react'
 
-import { Circle, Line, OrbitControls } from '@react-three/drei';
+import { Circle, Line, OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import * as THREE from 'three';
+import { cameraPosition } from 'three/examples/jsm/nodes/Nodes.js';
+import { DataWave } from './data/exemple';
 
 
 type MyVect3d = [number, number, number];
-
-
 const FACTOR_MINIMIZE = 2;
-const BASE_TTL = 25;
-
-const DataFdfe = [
-    [1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 1],
-    [1, 0, 5, 0, 1],
-    [1, 0, 0, 0, 1],
-    [1, 0, 0, 0, 1],
-    [1, 1, 1, 1, 1],
-];
-
-const DataFdf2 = [
-    [1, 0, 1],
-    [1, 0, 1]
-];
-
-const DataFdf42 = [
-[0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
-[0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
-[0,  0, 10, 10,  0,  0, 10, 10,  0,  0,  0, 10, 10, 10, 10, 10,  0,  0,  0],
-[0,  0, 10, 10,  0,  0, 10 ,10 , 0 , 0 , 0 , 0,  0,  0,  0, 10, 10,  0,  0],
-[0,  0, 10 ,10,  0,  0, 10, 10,  0,  0 , 0,  0,  0,  0,  0, 10, 10,  0,  0],
-[0,  0, 10 ,10, 10, 10, 10, 10,  0,  0,  0,  0, 10, 10, 10, 10,  0,  0,  0],
-[0,  0,  0 ,10, 10, 10, 10, 10,  0,  0,  0, 10, 10,  0,  0 , 0,  0,  0,  0],
-[0,  0,  0,  0,  0,  0 ,10, 10,  0,  0,  0, 10, 10,  0,  0 , 0,  0,  0,  0],
-[0,  0,  0,  0,  0,  0, 10 ,10 , 0,  0,  0, 10, 10, 10, 10, 10, 10,  0,  0],
-[0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
-[0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0]
-]
-
-const DataWave = [
-    [20,15,11,7,5,3,2,1,0,0,1,2,3,5,7,11,15,20],
-    [20,15,11,7,5,3,2,1,0,0,1,2,3,5,7,11,15,20],
-    [20,15,11,7,5,3,2,1,0,0,1,2,3,5,7,11,15,20],
-    [20,15,11,7,5,3,2,1,0,0,1,2,3,5,7,11,15,20],
-    [20,15,11,7,5,3,2,1,0,0,1,2,3,5,7,11,15,20],
-    [20,15,11,7,5,3,2,1,0,0,1,2,3,5,7,11,15,20],
-    [20,15,11,7,5,3,2,1,0,0,1,2,3,5,7,11,15,20],
-    [20,15,11,7,5,3,2,1,0,0,1,2,3,5,7,11,15,20],
-    [20,15,11,7,5,3,2,1,0,0,1,2,3,5,7,11,15,20],
-    [20,15,11,7,5,3,2,1,0,0,1,2,3,5,7,11,15,20],
-    [20,15,11,7,5,3,2,1,0,0,1,2,3,5,7,11,15,20],
-    [20,15,11,7,5,3,2,1,0,0,1,2,3,5,7,11,15,20],
-    [20,15,11,7,5,3,2,1,0,0,1,2,3,5,7,11,15,20],
-    [20,15,11,7,5,3,2,1,0,0,1,2,3,5,7,11,15,20],
-    [20,15,11,7,5,3,2,1,0,0,1,2,3,5,7,11,15,20],
-    [20,15,11,7,5,3,2,1,0,0,1,2,3,5,7,11,15,20],
-    [20,15,11,7,5,3,2,1,0,0,1,2,3,5,7,11,15,20],
-    [20,15,11,7,5,3,2,1,0,0,1,2,3,5,7,11,15,20],
-    [20,15,11,7,5,3,2,1,0,0,1,2,3,5,7,11,15,20],
-    [20,15,11,7,5,3,2,1,0,0,1,2,3,5,7,11,15,20],
-    [20,15,11,7,5,3,2,1,0,0,1,2,3,5,7,11,15,20],
-    [20,15,11,7,5,3,2,1,0,0,1,2,3,5,7,11,15,20],
-    [20,15,11,7,5,3,2,1,0,0,1,2,3,5,7,11,15,20],
-    [20,15,11,7,5,3,2,1,0,0,1,2,3,5,7,11,15,20],
-    [20,15,11,7,5,3,2,1,0,0,1,2,3,5,7,11,15,20],
-    [20,15,11,7,5,3,2,1,0,0,1,2,3,5,7,11,15,20],
-    [20,15,11,7,5,3,2,1,0,0,1,2,3,5,7,11,15,20],
-    [20,15,11,7,5,3,2,1,0,0,1,2,3,5,7,11,15,20],
-    [20,15,11,7,5,3,2,1,0,0,1,2,3,5,7,11,15,20],
-    [20,15,11,7,5,3,2,1,0,0,1,2,3,5,7,11,15,20],
-    [20,15,11,7,5,3,2,1,0,0,1,2,3,5,7,11,15,20],
-    [20,15,11,7,5,3,2,1,0,0,1,2,3,5,7,11,15,20],
-    [20,15,11,7,5,3,2,1,0,0,1,2,3,5,7,11,15,20],
-    [20,15,11,7,5,3,2,1,0,0,1,2,3,5,7,11,15,20]
-]
-
-// transform to pts
-const ptsList: MyVect3d[][] = [];
 
 // convert on d array dim
-let currData = DataWave;
-for (let z = 0; z < currData.length; z++) {
-    ptsList.push([]);
-    for (let x = 0; x < currData[z].length; x++) {
-        let height: number = currData[z][x] / FACTOR_MINIMIZE;
-        let newPts: MyVect3d = [x, height, -z];
-        ptsList[z].push(newPts);
+const startPts = [0,0,0];
+
+const generatePtsFromValueArr = (data : number[][]) => {
+    const _ptsList: MyVect3d[][] = [];
+
+    for (let z = 0; z < data.length; z++) {
+        _ptsList.push([]);
+        for (let x = 0; x < data[z].length; x++) {
+            let height: number = data[z][x] / FACTOR_MINIMIZE;
+            let newPts: MyVect3d = [x, height, -z];
+            _ptsList[z].push(newPts);
+        }
     }
+
+    return _ptsList;
+}
+
+const convertPtsToFdfViewPts = (_ptsList : MyVect3d[][]) => {
+    let _positions = [];
+    for (let z = 0; z < _ptsList.length; z++) {
+        for (let x = 0; x < _ptsList[z].length; x++) {
+            let basePts = _ptsList[z][x];
+    
+            // generate right pts
+            // ori pts + target pts
+            if (x < _ptsList[0].length - 1) {
+                let targetRightPts = _ptsList[z][x + 1];
+                _positions.push(...basePts);
+                _positions.push(...targetRightPts);
+            }
+            // generate bottom pts
+            // orif pts + target pts
+            if (z < _ptsList.length - 1) {
+                let targetBottomPts = _ptsList[z + 1][x];
+                _positions.push(...basePts);
+                _positions.push(...targetBottomPts);
+            }
+        }
+    }
+    return _positions;
+}
+
+let ptsList = generatePtsFromValueArr(DataWave);
+let positions = convertPtsToFdfViewPts(ptsList);
+
+const FdfChild = () => {
+    const [cameraPos, setCameraPos] = useState<MyVect3d>([-0.5, 1, 2]);
+
+    useFrame((_, delta) => {
+        // update camera pos
+        setCameraPos(old => ([old[0], old[1], old[2] - 0.1]))
+        console.log(cameraPos)
+    })
+
+    return (
+        <>
+            <PerspectiveCamera makeDefault position={cameraPos} />
+            <directionalLight
+                position={[3.3, 1.0, 4.4]}
+                castShadow
+                intensity={Math.PI * 2}
+            />
+
+            <mesh visible userData={{ hello: 'world' }} position={[-5, -5, 0]}>
+                <sphereGeometry />
+                <meshStandardMaterial color="hotpink" transparent />
+            </mesh>
+
+            <Line
+                position={[-8, -5, 0]}
+                points={positions}
+                color={0xff0000}
+                segments
+            /></>
+    )
+
 }
 
 // The X axis is red. The Y axis is green. The Z axis is blue. 
 const Fdf = () => {
 
-        const positions : number[] = [];//new Float32Array(ptsList.length * 3);
-        
-        for (let z = 0; z < ptsList.length; z++) {
-            for (let x = 0; x < ptsList[z].length; x++) {
-                let basePts = ptsList[z][x];
-                
-                // generate right pts
-                // ori pts + target pts
-                if (x < ptsList[0].length - 1) {
-                    let targetRightPts = ptsList[z][x + 1];
-                    positions.push(...basePts);
-                    positions.push(...targetRightPts);
-                }
-                // generate bottom pts
-                // orif pts + target pts
-                if (z < ptsList.length - 1) {
-                    let targetBottomPts = ptsList[z + 1][x];
-                    positions.push(...basePts);
-                    positions.push(...targetBottomPts);
-                }
-            }
-        }
-        console.log("position")
-        console.log(positions)
-        
-        
     return (
         <div id="canvas-container" style={{ width: "100vw", height: "100vh" }}>
-            <Canvas camera={{ position: [-0.5, 1, 2] }} shadows>
-                <directionalLight
-                    position={[3.3, 1.0, 4.4]}
-                    castShadow
-                    intensity={Math.PI * 2}
-                />
-
-                <mesh visible userData={{ hello: 'world' }} position={[2, 0, -10]}>
-                    <sphereGeometry />
-                    <meshStandardMaterial color="hotpink" transparent />
-                </mesh>
-
-                <Line
-                    points={positions}
-                    color={0xff0000}
-                    segments
-                />
-
-                <OrbitControls target={[0, 1, 0]} />
+            <Canvas shadows>
+                <FdfChild />
+                {/*
+                <OrbitControls target={[0, 0, 0]} />
+                */}
                 <axesHelper args={[5]} />
             </Canvas>
         </div>
