@@ -1,6 +1,7 @@
 import { useAnimations, useGLTF } from '@react-three/drei'
-import * as model from "./../models";
-import { useEffect } from 'react';
+import * as model from "../models";
+import { useEffect, useRef } from 'react';
+import useInput from "../hooks/useInput";
 
 //https://kaylousberg.itch.io/kaykit-adventurers
 type TAnimationType = 
@@ -83,23 +84,53 @@ type TAnimationType =
 interface IKnightCaracter {
     animationType : TAnimationType;
 }
-const KnightCarater = (props : IKnightCaracter) => {
+const MyPlayer = (props : IKnightCaracter) => {
     const { nodes, materials, animations, scene } = useGLTF(model.knight)
     const { ref, mixer, names, actions, clips } = useAnimations(animations, scene) 
-    console.log(mixer)
-    console.log(animations)
+    const { forward, backward, left, right, jump, shift} = useInput();
+    const currentAction = useRef("");
+
+    scene.scale.set(0.2,0.2,0.2);
+
+
 
     useEffect(() => {
-        // run animation
-        console.log("animation")
-        console.log(animations)
-        actions[props.animationType]?.play();
-        actions?.mooveTopBottom?.play();
-    }, []);
+        let action : TAnimationType;
+
+        if (forward || left || right) {
+            action = "Walking_A";
+            if (shift)
+                action = "Running_A";
+        }
+        else if (jump) {
+            action = "Jump_Full_Long";
+        }
+        else if (backward) {
+            action = "Walking_Backward";
+        }
+        else {
+            action = "Idle"
+        }
+
+        // woot woot ?? 
+        if (currentAction.current !== action) {
+            // get new animation
+            const nextActionToplay = actions[action];
+            // get back current playing animation
+            const current = actions[currentAction.current];
+            current?.fadeOut(0.2); // ????????
+            nextActionToplay?.reset().fadeIn(0.2).play();
+            currentAction.current = action;
+        }
+
+    //  actions[props.animationType]?.play();
+    //  console.log({ forward, backward, left, right, jump, shift})
+    }, [forward, backward, left, right, jump, shift]);
+    
     return <>
         <primitive object={scene} />
     </>
 }
 
 
-export default KnightCarater;
+export default MyPlayer;

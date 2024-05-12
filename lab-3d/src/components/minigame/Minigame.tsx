@@ -2,13 +2,14 @@ import { OrbitControls, PerspectiveCamera, Stats, useAnimations, useGLTF } from 
 import Lights from './components/Lights';
 import TreeRealModel from './components/TreeRealModel';
 import * as model from "./models";
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import MyCubeAnimation from './components/MyCubeAnimation';
 import MainPlane from './components/MainPlane';
-import KnightCaracter from './components/KnightCaracter';
+import MyPlayer from './components/MyPlayer';
 
 const Minigame = () => {
     const testing = true;
+
 
     return (
         <>
@@ -28,7 +29,7 @@ const Minigame = () => {
             {/*}
             <MyCubeAnimation />
             */}
-            <KnightCaracter animationType="Walking_A" />
+            <MyPlayer animationType="Walking_A" />
             {/*<AnimateBox isTesting={testing}/> */}
 
             <MainPlane />
