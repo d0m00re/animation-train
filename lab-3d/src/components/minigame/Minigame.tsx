@@ -1,53 +1,11 @@
-import React, { useRef, useEffect } from 'react'
-import { useFrame, useThree, useLoader } from '@react-three/fiber'
-import AnimateBox from './components/AnimateBox'
-import { OrbitControls, PerspectiveCamera, Stats, TransformControls } from '@react-three/drei'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import * as models from "./models";
+import { OrbitControls, PerspectiveCamera, Stats, useAnimations, useGLTF } from '@react-three/drei'
 import Lights from './components/Lights';
-
-const TexturedSphere = () => {
-
-    return (
-        <>
-            {/*
-            <mesh scale={[0.5, 0.5, 0.5]} position={[1, 0, 0]}>
-                <sphereGeometry />
-                <meshStandardMaterial  />
-            </mesh>
-
-            <mesh scale={[0.5, 0.5, 0.5]} position={[0, 0, 0]}>
-                <sphereGeometry />
-                <meshStandardMaterial  />
-            </mesh>
-
-            <mesh scale={[0.5, 0.5, 0.5]} position={[-1, 0, 0]}>
-                <sphereGeometry />
-                <meshStandardMaterial />
-            </mesh>
-    */}
-            <mesh position={[0, 0, 0]} rotation-x={Math.PI * -0.5} receiveShadow>
-                <planeGeometry
-                    args={[5, 5]}
-                />
-                <meshStandardMaterial color={"#458745"} />
-            </mesh>
-        </>
-    )
-}
-
-const Tree = () => {
-    const model = useLoader(GLTFLoader, models.tree);
-
-    console.log(model)
-
-    model.scene.traverse((obj: any) => {
-        if (obj.isMesh)
-            obj.castShadow = true;
-    })
-
-    return <primitive object={model.scene} />
-}
+import TreeRealModel from './components/TreeRealModel';
+import * as model from "./models";
+import { useEffect } from 'react';
+import MyCubeAnimation from './components/MyCubeAnimation';
+import MainPlane from './components/MainPlane';
+import KnightCaracter from './components/KnightCaracter';
 
 const Minigame = () => {
     const testing = true;
@@ -56,12 +14,24 @@ const Minigame = () => {
         <>
             <PerspectiveCamera />
 
-            <Tree />
+            {/* <Tree /> */}
+            {/*}
+            <TreeModel />
+            <TreeModel position={[-2,0,0]}/>
+            */}
+            <TreeRealModel
+                boundary={10}
+                count={20}
+            />
             <OrbitControls />
             <Lights />
+            {/*}
+            <MyCubeAnimation />
+            */}
+            <KnightCaracter animationType="Walking_A" />
             {/*<AnimateBox isTesting={testing}/> */}
 
-            <TexturedSphere />
+            <MainPlane />
 
             {testing ?
                 <>
