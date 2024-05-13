@@ -24,8 +24,6 @@ interface IKnightCaracter {
     animationType: TAnimationType;
 }
 
-
-
 const MyPlayerV2 = (props: IKnightCaracter) => {
     const { nodes, materials, animations, scene } = useGLTF(model.knight)
     const { ref, mixer, names, actions, clips } = useAnimations(animations, scene)
@@ -98,8 +96,6 @@ const MyPlayerV2 = (props: IKnightCaracter) => {
                 camera.position.x - scene.position.x,
                 camera.position.z - scene.position.z
             );
-
-
 
             // diagonal movement angle offset
             let newDirectionOffset = directionOffset({

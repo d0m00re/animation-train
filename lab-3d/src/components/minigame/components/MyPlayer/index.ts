@@ -1,3 +1,3 @@
-import MyPlayerV2 from "./MyPlayerV2";
+import MyPlayer from "./MyPlayer";
 
-export default MyPlayerV2;
+export default MyPlayer;

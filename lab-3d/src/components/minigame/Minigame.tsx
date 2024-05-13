@@ -2,7 +2,7 @@ import { OrbitControls, PerspectiveCamera, Stats, useAnimations, useGLTF } from 
 import Lights from './components/Lights';
 import TreeRealModel from './components/TreeRealModel';
 import MainPlane from './components/MainPlane';
-import MyPlayer from './components/MyPlayer/MyPlayerV2';
+import MyPlayer from './components/MyPlayer';
 
 const Minigame = () => {
     const testing = true;
@@ -15,7 +15,7 @@ const Minigame = () => {
                 boundary={10}
                 count={20}
             />
-            <OrbitControls />
+
             <Lights />
 
             <MyPlayer animationType="Walking_A" />
