@@ -13,7 +13,7 @@ const Minigame = () => {
 
             <TreeRealModel
                 boundary={10}
-                count={20}
+                count={1}
             />
 
             <Lights />

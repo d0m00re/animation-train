@@ -36,13 +36,23 @@ const MyPlayerV2 = (props: IKnightCaracter) => {
 
     const updateCameraTarget = (moveX : number, moveZ : number) => {
         // move camera
+        console.log("====== INITIAL CAMERA ZOOM =====")
+        console.log(camera.position)
+        camera.position.y = 1.3;
         camera.position.x += moveX;
         camera.position.z += moveZ;
     
         // update camera target
         cameraTarget.x = scene.position.x;
-        cameraTarget.y = scene.position.y + 1;
+        cameraTarget.y = scene.position.y;
         cameraTarget.z = scene.position.z;
+
+        console.log("----- CAMERA POSITION -----")
+        console.log(camera.position)
+
+        console.log("==== CAMERA TARGET ===")
+        console.log(cameraTarget)
+    
     
         if (controlRef.current)
         {
@@ -89,7 +99,6 @@ const MyPlayerV2 = (props: IKnightCaracter) => {
 
     useFrame((state, delta) => {
         // walking or running
-        console.log({backward})
 
         if (currentAction.current === animationNameDico.running || currentAction.current === animationNameDico.walking || currentAction.current === animationNameDico.walkingBackward) {
             let angleYCameraDirection = Math.atan2(
@@ -140,7 +149,7 @@ const MyPlayerV2 = (props: IKnightCaracter) => {
 
     return <>
         {/*@ts-ignore*/}
-        <OrbitControls ref={controlRef} />
+        <OrbitControls ref={controlRef} enableZoom={true} minDistance={2} maxDistance={4} />
         <primitive object={scene} />
     </>
 }
