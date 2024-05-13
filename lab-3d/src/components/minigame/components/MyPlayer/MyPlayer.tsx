@@ -46,14 +46,7 @@ const MyPlayerV2 = (props: IKnightCaracter) => {
         cameraTarget.x = scene.position.x;
         cameraTarget.y = scene.position.y;
         cameraTarget.z = scene.position.z;
-
-        console.log("----- CAMERA POSITION -----")
-        console.log(camera.position)
-
-        console.log("==== CAMERA TARGET ===")
-        console.log(cameraTarget)
-    
-    
+        
         if (controlRef.current)
         {
             // @ts-ignore
@@ -115,12 +108,14 @@ const MyPlayerV2 = (props: IKnightCaracter) => {
             });
 
             // rotate model
+            
             rotateQuaternion.setFromAxisAngle(
                 rotateAngle,
                 angleYCameraDirection + newDirectionOffset
             );
+            
             scene.quaternion.rotateTowards(rotateQuaternion, 0.2)
-
+            
             // calculate direction
             camera.getWorldDirection(walkDirection)
             walkDirection.y = 0
