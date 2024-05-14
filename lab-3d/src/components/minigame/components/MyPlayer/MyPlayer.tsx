@@ -4,19 +4,25 @@ import * as THREE from "three";
 import { useEffect, useRef } from 'react';
 import useInput from "../../hooks/useInput";
 import { useFrame, useThree } from '@react-three/fiber';
-import { TAnimationType, animationNameDico } from './MyPlayer.types';
+import { IPlayer, TAnimationType, animationNameDico } from './MyPlayer.types';
 import { directionOffset } from './MyPlayer.utils';
+import { IObjectInfo } from '../MainObject/mainObject';
+import { isOverlaping } from '../Tree/utils.tree';
 
 let walkDirection = new THREE.Vector3();
 let rotateAngle = new THREE.Vector3(0, 1, 0);
 let rotateQuaternion = new THREE.Quaternion();
 let cameraTarget = new THREE.Vector3();
 
-interface IKnightCaracter {
+interface IMyPlayer {
     animationType: TAnimationType;
+    player : IPlayer;
+    setPlayer : (props : IPlayer) => void;
+
+    globalObject : IObjectInfo;
 }
 
-const MyPlayer = (props: IKnightCaracter) => {
+const MyPlayer = (props: IMyPlayer) => {
     const { animations, scene } = useGLTF(model.knight)
     const { actions } = useAnimations(animations, scene)
     const { forward, backward, left, right, jump, shift } = useInput();
@@ -60,7 +66,7 @@ const MyPlayer = (props: IKnightCaracter) => {
         else if (jump)
             action = animationNameDico.jump;
         else if (backward)
-            action = animationNameDico.walkingBackward;
+            action = animationNameDico.walking;
         else
             action = animationNameDico.idle
 
@@ -124,17 +130,27 @@ const MyPlayer = (props: IKnightCaracter) => {
                 z : scene.position.z + moveZ
             }
 
+            // collision checker
+            // box collision checker 
+            let overlaping = isOverlaping(
+                props.globalObject.trees.length,
+                {position : futurPos, box : props.player.box[0]},
+                props.globalObject.trees
+            );
+
+            if (overlaping) return ;
+            // ----
+
+
             // add to caracter
             scene.position.x = futurPos.x;
             scene.position.z = futurPos.z;
+            // @ts-ignore
+            props.setPlayer({...props.player, pos : [scene.position.x, props.player.pos[1], scene.position.z]});
 
             // update camera pos
             updateCameraTarget(moveX, moveZ)
         }
-
-        // let position = scene.position;
-        // camera.position.set(position.x, position.y + 0.5, position.z - 1)
-        // camera.lookAt(position.x, position.y, position.z);
     })
 
     return <>
@@ -142,7 +158,7 @@ const MyPlayer = (props: IKnightCaracter) => {
         <OrbitControls ref={controlRef} enableZoom={true} minDistance={2} maxDistance={4} />
         <primitive object={scene} />
         <mesh
-            scale={[1, 1, 1]}
+            scale={props.player.box}
             position={[scene.position.x, scene.position.y, scene.position.z]}
         >
             <boxGeometry />

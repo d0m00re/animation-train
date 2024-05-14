@@ -1,3 +1,17 @@
+export type  MyVect3d = [number, number, number];
+
+export interface IPlayer {
+    pos : MyVect3d;
+    box : MyVect3d;
+}
+
+export interface IDirectionOffset {
+    forward : boolean;
+    backward : boolean;
+    left : boolean;
+    right : boolean;
+}
+
 //https://kaylousberg.itch.io/kaykit-adventurers
 export type TAnimationType =
     "Idle" |

@@ -1,20 +1,21 @@
-import {useEffect, useState } from 'react'
+import {useEffect } from 'react'
 import { useLoader } from '@react-three/fiber'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import * as models from "./../../models";
 import { isOverlaping, newPosition } from './utils.tree';
 import { treeType } from './tree.types';
-
+import { IObjectInfo } from '../MainObject/mainObject';
 
 interface TreeRealModel {
   boundary: number;
   count: number;
+  trees: treeType[]
+  setTrees: (trees: treeType[]) => void;
+  globalObject : IObjectInfo;
 }
 
-const TreeRealModel = ({ boundary, count }: TreeRealModel) => {
+const Tree = (props: TreeRealModel) => {
   const model = useLoader(GLTFLoader, models.tree);
-  const [trees, setTrees] = useState<treeType[]>([]);
-  console.log(model)
 
   model.scene.traverse((obj: any) => {
     if (obj.isMesh)
@@ -34,20 +35,20 @@ const TreeRealModel = ({ boundary, count }: TreeRealModel) => {
       if (!isOverlaping(count, treeArray[count], treeArray))
         count++;
     }
-    setTrees(treeArray);
+    props.setTrees(treeArray);
 }
 
 useEffect(() => {
   const tempTrees: treeType[] = [];
-  for (let i = 0; i < count; i++) {
+  for (let i = 0; i < props.count; i++) {
     tempTrees.push({ position: { x: 0, z: 0 }, box: 1 });
   }
-  updatePosition(tempTrees, boundary);
-}, [boundary, count]);
+  updatePosition(tempTrees, props.boundary);
+}, [props.boundary, props.count]);
 
 return <group rotation={[0, 0, 0]}>
   {
-    trees.map((tree, index) => {
+    props.trees.map((tree, index) => {
       return (
         <object3D
           key={index}
@@ -65,4 +66,4 @@ return <group rotation={[0, 0, 0]}>
 }
 
 
-export default TreeRealModel;
+export default Tree;

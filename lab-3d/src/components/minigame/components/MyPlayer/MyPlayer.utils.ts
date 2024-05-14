@@ -1,9 +1,9 @@
-interface IDirectionOffset {
-    forward : boolean;
-    backward : boolean;
-    left : boolean;
-    right : boolean;
-}
+import { IDirectionOffset, IPlayer } from "./MyPlayer.types";
+
+const makeEmptyPlayer = () : IPlayer => ({
+    pos : [0,0,0],
+    box : [1,1,1]
+});
 
 const directionOffset = (props : IDirectionOffset) => {
     let directionOffset = 0;//Math.PI;//0; // w
@@ -33,5 +33,6 @@ const directionOffset = (props : IDirectionOffset) => {
 }
 
 export {
-    directionOffset
+    directionOffset,
+    makeEmptyPlayer
 }
