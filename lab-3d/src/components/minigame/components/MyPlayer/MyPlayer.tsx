@@ -12,21 +12,13 @@ let rotateAngle = new THREE.Vector3(0, 1, 0);
 let rotateQuaternion = new THREE.Quaternion();
 let cameraTarget = new THREE.Vector3();
 
-
-interface IDirectionOffset {
-    forward: boolean;
-    backward: boolean;
-    left: boolean;
-    right: boolean;
-}
-
 interface IKnightCaracter {
     animationType: TAnimationType;
 }
 
-const MyPlayerV2 = (props: IKnightCaracter) => {
-    const { nodes, materials, animations, scene } = useGLTF(model.knight)
-    const { ref, mixer, names, actions, clips } = useAnimations(animations, scene)
+const MyPlayer = (props: IKnightCaracter) => {
+    const { animations, scene } = useGLTF(model.knight)
+    const { actions } = useAnimations(animations, scene)
     const { forward, backward, left, right, jump, shift } = useInput();
     const currentAction = useRef("");
     const controlRef = useRef<typeof OrbitControls>();
@@ -36,8 +28,6 @@ const MyPlayerV2 = (props: IKnightCaracter) => {
 
     const updateCameraTarget = (moveX : number, moveZ : number) => {
         // move camera
-        console.log("====== INITIAL CAMERA ZOOM =====")
-        console.log(camera.position)
         camera.position.y = 1.3;
         camera.position.x += moveX;
         camera.position.z += moveZ;
@@ -129,9 +119,14 @@ const MyPlayerV2 = (props: IKnightCaracter) => {
             const moveX = walkDirection.x * velocity * delta;
             const moveZ = walkDirection.z * velocity * delta;
 
+            const futurPos = {
+                x : scene.position.x + moveX,
+                z : scene.position.z + moveZ
+            }
+
             // add to caracter
-            scene.position.x += moveX;
-            scene.position.z += moveZ;
+            scene.position.x = futurPos.x;
+            scene.position.z = futurPos.z;
 
             // update camera pos
             updateCameraTarget(moveX, moveZ)
@@ -146,8 +141,15 @@ const MyPlayerV2 = (props: IKnightCaracter) => {
         {/*@ts-ignore*/}
         <OrbitControls ref={controlRef} enableZoom={true} minDistance={2} maxDistance={4} />
         <primitive object={scene} />
+        <mesh
+            scale={[1, 1, 1]}
+            position={[scene.position.x, scene.position.y, scene.position.z]}
+        >
+            <boxGeometry />
+            <meshBasicMaterial color="yellow" wireframe />
+          </mesh>
     </>
 }
 
 
-export default MyPlayerV2;
+export default MyPlayer;

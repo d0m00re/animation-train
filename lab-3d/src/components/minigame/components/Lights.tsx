@@ -16,7 +16,7 @@ const Lights = () => {
                 position={[0, 10, 10]}
                 color="white"
                 castShadow
-                />
+            />
         </>
     )
 }

@@ -1,6 +1,6 @@
-import { OrbitControls, PerspectiveCamera, Stats, useAnimations, useGLTF } from '@react-three/drei'
+import { Stats } from '@react-three/drei'
 import Lights from './components/Lights';
-import TreeRealModel from './components/TreeRealModel';
+import Tree from './components/Tree';
 import MainPlane from './components/MainPlane';
 import MyPlayer from './components/MyPlayer';
 
@@ -9,19 +9,13 @@ const Minigame = () => {
 
     return (
         <>
-            <PerspectiveCamera />
-
-            <TreeRealModel
+            <Tree
                 boundary={10}
                 count={1}
             />
-
             <Lights />
-
             <MyPlayer animationType="Walking_A" />
-
             <MainPlane />
-
             {testing ?
                 <>
                     <axesHelper args={[2]} />
