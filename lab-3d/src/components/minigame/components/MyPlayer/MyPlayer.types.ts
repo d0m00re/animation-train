@@ -2,7 +2,7 @@ export type  MyVect3d = [number, number, number];
 
 export interface IPlayer {
     pos : MyVect3d;
-    box : MyVect3d;
+    boundingBox : MyVect3d;
 }
 
 export interface IDirectionOffset {

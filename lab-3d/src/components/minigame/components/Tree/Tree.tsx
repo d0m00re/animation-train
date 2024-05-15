@@ -5,6 +5,7 @@ import * as models from "./../../models";
 import { isOverlaping, newPosition } from './utils.tree';
 import { treeType } from './tree.types';
 import { IObjectInfo } from '../MainObject/mainObject';
+import { IVect3d } from '../Door/door.entity';
 
 interface TreeRealModel {
   boundary: number;
@@ -26,10 +27,11 @@ const Tree = (props: TreeRealModel) => {
     let count = 0;
     while (count < treeArray.length) {
       let currentTree = treeArray[count];
-      let newPos = {
-        x: newPosition(currentTree.box, boundary),
-        z: newPosition(currentTree.box, boundary)
-      }
+      let newPos : IVect3d = [
+        newPosition(currentTree.boundingBox[0], boundary),
+        0,
+        newPosition(currentTree.boundingBox[2], boundary)
+      ];
       treeArray[count].position = newPos;
 
       if (!isOverlaping(count, treeArray[count], treeArray))
@@ -41,7 +43,7 @@ const Tree = (props: TreeRealModel) => {
 useEffect(() => {
   const tempTrees: treeType[] = [];
   for (let i = 0; i < props.count; i++) {
-    tempTrees.push({ position: { x: 0, z: 0 }, box: 1 });
+    tempTrees.push({ position: [0, 0, 0], boundingBox: [1,1,1] });
   }
   updatePosition(tempTrees, props.boundary);
 }, [props.boundary, props.count]);
@@ -52,8 +54,8 @@ return <group rotation={[0, 0, 0]}>
       return (
         <object3D
           key={index}
-          position={[tree.position.x, 0, tree.position.z]}>
-          <mesh scale={[tree.box, tree.box, tree.box]}>
+          position={[tree.position[0], 0, tree.position[2]]}>
+          <mesh scale={tree.boundingBox}>
             <boxGeometry />
             <meshBasicMaterial color="blue" wireframe />
           </mesh>

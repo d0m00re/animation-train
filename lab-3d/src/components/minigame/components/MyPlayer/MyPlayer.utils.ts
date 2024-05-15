@@ -2,7 +2,7 @@ import { IDirectionOffset, IPlayer } from "./MyPlayer.types";
 
 const makeEmptyPlayer = () : IPlayer => ({
     pos : [0,0,0],
-    box : [1,1,1]
+    boundingBox : [1,1,1]
 });
 
 const directionOffset = (props : IDirectionOffset) => {

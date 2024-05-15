@@ -8,6 +8,7 @@ import { IPlayer, TAnimationType, animationNameDico } from './MyPlayer.types';
 import { directionOffset } from './MyPlayer.utils';
 import { IObjectInfo } from '../MainObject/mainObject';
 import { isOverlaping } from '../Tree/utils.tree';
+import { IVect3d } from '../Door/door.entity';
 
 let walkDirection = new THREE.Vector3();
 let rotateAngle = new THREE.Vector3(0, 1, 0);
@@ -16,10 +17,10 @@ let cameraTarget = new THREE.Vector3();
 
 interface IMyPlayer {
     animationType: TAnimationType;
-    player : IPlayer;
-    setPlayer : (props : IPlayer) => void;
+    player: IPlayer;
+    setPlayer: (props: IPlayer) => void;
 
-    globalObject : IObjectInfo;
+    globalObject: IObjectInfo;
 }
 
 const MyPlayer = (props: IMyPlayer) => {
@@ -32,28 +33,27 @@ const MyPlayer = (props: IMyPlayer) => {
 
     scene.scale.set(0.2, 0.2, 0.2);
 
-    const updateCameraTarget = (moveX : number, moveZ : number) => {
+    const updateCameraTarget = (moveX: number, moveZ: number) => {
         // move camera
         camera.position.y = 1.3;
         camera.position.x += moveX;
         camera.position.z += moveZ;
-    
+
         // update camera target
         cameraTarget.x = scene.position.x;
         cameraTarget.y = scene.position.y;
         cameraTarget.z = scene.position.z;
-        
-        if (controlRef.current)
-        {
+
+        if (controlRef.current) {
             // @ts-ignore
-                controlRef.current.target = cameraTarget;
+            controlRef.current.target = cameraTarget;
         }
     }
 
     useEffect(() => {
-        updateCameraTarget(0,0)
+        updateCameraTarget(0, 0)
     }, [])
-    
+
 
     useEffect(() => {
         let action: TAnimationType;
@@ -104,14 +104,14 @@ const MyPlayer = (props: IMyPlayer) => {
             });
 
             // rotate model
-            
+
             rotateQuaternion.setFromAxisAngle(
                 rotateAngle,
                 angleYCameraDirection + newDirectionOffset
             );
-            
+
             scene.quaternion.rotateTowards(rotateQuaternion, 0.2)
-            
+
             // calculate direction
             camera.getWorldDirection(walkDirection)
             walkDirection.y = 0
@@ -125,28 +125,34 @@ const MyPlayer = (props: IMyPlayer) => {
             const moveX = walkDirection.x * velocity * delta;
             const moveZ = walkDirection.z * velocity * delta;
 
-            const futurPos = {
-                x : scene.position.x + moveX,
-                z : scene.position.z + moveZ
-            }
+            const futurPos: IVect3d = [
+                scene.position.x + moveX,
+                0,
+                scene.position.z + moveZ
+            ];
 
             // collision checker
-            // box collision checker 
+            // box collision checker  on tree
             let overlaping = isOverlaping(
                 props.globalObject.trees.length,
-                {position : futurPos, box : props.player.box[0]},
+                { position: futurPos, boundingBox: props.player.boundingBox },
                 props.globalObject.trees
             );
 
-            if (overlaping) return ;
+            if (overlaping) return;
             // ----
+            overlaping = isOverlaping(
+                1,
+                { position: futurPos, boundingBox: props.player.boundingBox },
+                [props.globalObject.door]
+            )
 
 
             // add to caracter
-            scene.position.x = futurPos.x;
-            scene.position.z = futurPos.z;
+            scene.position.x = futurPos[0];
+            scene.position.z = futurPos[2];
             // @ts-ignore
-            props.setPlayer({...props.player, pos : [scene.position.x, props.player.pos[1], scene.position.z]});
+            props.setPlayer({ ...props.player, pos: [scene.position.x, props.player.pos[1], scene.position.z] });
 
             // update camera pos
             updateCameraTarget(moveX, moveZ)
@@ -158,12 +164,12 @@ const MyPlayer = (props: IMyPlayer) => {
         <OrbitControls ref={controlRef} enableZoom={true} minDistance={2} maxDistance={4} />
         <primitive object={scene} />
         <mesh
-            scale={props.player.box}
+            scale={props.player.boundingBox}
             position={[scene.position.x, scene.position.y, scene.position.z]}
         >
             <boxGeometry />
             <meshBasicMaterial color="yellow" wireframe />
-          </mesh>
+        </mesh>
     </>
 }
 

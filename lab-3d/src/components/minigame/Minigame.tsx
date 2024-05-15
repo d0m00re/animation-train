@@ -7,36 +7,38 @@ import { useState } from 'react';
 import { treeType } from './components/Tree/tree.types';
 import { IPlayer } from './components/MyPlayer/MyPlayer.types';
 import { IObjectInfo, makeEmptyObjectInfo } from './components/MainObject/mainObject';
+import Door from './components/Door/Door';
+import { IDoorObject } from './components/Door/door.entity';
 
 const Minigame = () => {
-    //const [trees, setTrees] = useState<treeType[]>([]);
     const [objectInfo, setObjectInfo] = useState<IObjectInfo>(makeEmptyObjectInfo());
 
-    const testing = true; 
+    const testing = false;
 
-    const setTrees = (trees : treeType[]) => {
+    const setTrees = (trees: treeType[]) => {
         setObjectInfo(old => ({
             ...old,
-            trees : trees
+            trees: trees
         }));
     }
 
-    const setPlayer = (player : IPlayer) => {
+    const setPlayer = (player: IPlayer) => {
         setObjectInfo(old => ({
             ...old,
-            player : player
+            player: player
         }));
+    }
+
+    const setDoor = (door: IDoorObject) => {
+        setObjectInfo(old => ({
+            ...old,
+            door: door
+        }))
     }
 
     return (
         <>
-            <Tree
-                boundary={10}
-                count={5}
-                trees={objectInfo.trees}
-                setTrees={setTrees}
-                globalObject={objectInfo}
-            />
+            <MainPlane />
             <Lights />
             <MyPlayer
                 animationType="Walking_A"
@@ -44,7 +46,21 @@ const Minigame = () => {
                 setPlayer={setPlayer}
                 globalObject={objectInfo}
             />
-            <MainPlane />
+
+            <Tree
+                boundary={10}
+                count={5}
+                trees={objectInfo.trees}
+                setTrees={setTrees}
+                globalObject={objectInfo}
+            />
+
+            <Door
+                onClick={() => { console.log("click") }}
+                door={objectInfo.door}
+                setDoor={setDoor}
+            />
+           
             {testing ?
                 <>
                     <axesHelper args={[2]} />
