@@ -21,13 +21,15 @@ type IDoor = {
 
 const openDoorAnimationNameList: string[] = ["openDoorR", "openDoorL"];
 const closeDoorAnimationNameList : string[] = ["closeDoorR", "closeDoorL"];
+const openCloseAnimList : [string, string] = ["fullDoorAnimR", "fullDoorAnimL"];
 
-const getAnimationList = (open : boolean) => (open) ? openDoorAnimationNameList : closeDoorAnimationNameList;
+//const getAnimationList = (open : boolean) => (open) ? openDoorAnimationNameList : closeDoorAnimationNameList;
 
 function Door(props: IDoor) {
     const three = useThree();
 
     const { animations, scene } = useGLTF(model.doorTest)
+    console.log(animations)
     const { actions } = useAnimations(animations, scene);
     
     // action click
@@ -64,23 +66,25 @@ function Door(props: IDoor) {
     useEffect(() => {
         if (!props.door.data.renderCount) return ;
 
-        let animListName = getAnimationList(props.door.data.open);
+        let animListName = openDoorAnimationNameList;//openCloseAnimList;//getAnimationList(props.door.data.open);
 
         // problemcome when i play 2 animation, that s don t reset init  door pos
 
         animListName.map((animName) => {
+            console.log("anim list name")
+            console.log(animListName)
             let anim = actions[animName];
             if (!anim) {
                 console.error(`anim not found : ${animName}`);
                 return ;
             }
             anim.reset();
-            //anim.loop = THREE.LoopOnce
-
-            anim.clampWhenFinished = true; // problem come form here
+            //anim.time = 0;//duration / 2;
+            anim.timeScale = (props.door.data.open) ? 1 : -1;
             anim.repetitions = 1;
-            anim.timeScale = 10;
-            anim.play()//.play();
+           // anim.timeScale = 10;
+            anim.clampWhenFinished = true;
+            anim.play();
         });
     }, [props.door])
     
