@@ -153,6 +153,7 @@ const MyPlayer = (props: IMyPlayer) => {
             scene.position.x = futurPos[0];
             scene.position.z = futurPos[2];
             // @ts-ignore
+        //    console.log("Player position : ",  [scene.position.x, props.player.pos[1], scene.position.z] )
             props.setPlayer({ ...props.player, pos: [scene.position.x, props.player.pos[1], scene.position.z] });
 
             // update camera pos

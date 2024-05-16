@@ -30,8 +30,6 @@ const Minigame = () => {
     }
 
     const setDoor = (door: IDoorObject) => {
-        console.log("setDoor")
-        console.log(door)
         setObjectInfo(old => ({
             ...old,
             door: door
@@ -52,8 +50,7 @@ const Minigame = () => {
     }
 
     useEffect(() => {
-      console.log("Object update")
-      console.log(objectInfo)
+     
     }, [objectInfo])
     
 
@@ -77,8 +74,9 @@ const Minigame = () => {
             />
 
             <Door
-                onClick={() => { console.log("click") }}
+                onClick={() => {  }}
                 door={objectInfo.door}
+                globalObject={objectInfo}
                 revOpenDoor={() => setObjectInfo(old => ({
                     ...old,
                     door : {
