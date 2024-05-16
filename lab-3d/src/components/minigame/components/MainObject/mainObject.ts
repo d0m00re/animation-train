@@ -17,7 +17,8 @@ export const makeEmptyObjectInfo = () : IObjectInfo => {
             position : [0, 0, -5],
             boundingBox : [2.5, 3, 0.9],
             data : {
-                open : false
+                open : false,
+                renderCount : 0
             }
         }
     })

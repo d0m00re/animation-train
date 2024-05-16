@@ -147,6 +147,7 @@ const MyPlayer = (props: IMyPlayer) => {
                 [props.globalObject.door]
             )
 
+            if (!props.globalObject.door.data.open && overlaping) return;
 
             // add to caracter
             scene.position.x = futurPos[0];

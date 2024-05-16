@@ -5,5 +5,6 @@ export interface IDoorObject {
     position : IVect3d;
     data : {
         open : boolean;
+        renderCount : number;
     }
 }

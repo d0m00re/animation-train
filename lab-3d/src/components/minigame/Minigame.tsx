@@ -3,7 +3,7 @@ import Lights from './components/Lights';
 import Tree from './components/Tree';
 import MainPlane from './components/MainPlane';
 import MyPlayer from './components/MyPlayer';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { treeType } from './components/Tree/tree.types';
 import { IPlayer } from './components/MyPlayer/MyPlayer.types';
 import { IObjectInfo, makeEmptyObjectInfo } from './components/MainObject/mainObject';
@@ -30,11 +30,32 @@ const Minigame = () => {
     }
 
     const setDoor = (door: IDoorObject) => {
+        console.log("setDoor")
+        console.log(door)
         setObjectInfo(old => ({
             ...old,
             door: door
         }))
     }
+
+    const revOpenDoor = () => {
+        setObjectInfo(old => ({
+            ...old,
+            door : {
+                ...old.door,
+                data : {
+                    open : !old.door.data.open,
+                    renderCount : old.door.data.renderCount + 1
+                }
+            }
+        }))
+    }
+
+    useEffect(() => {
+      console.log("Object update")
+      console.log(objectInfo)
+    }, [objectInfo])
+    
 
     return (
         <>
@@ -58,7 +79,16 @@ const Minigame = () => {
             <Door
                 onClick={() => { console.log("click") }}
                 door={objectInfo.door}
-                setDoor={setDoor}
+                revOpenDoor={() => setObjectInfo(old => ({
+                    ...old,
+                    door : {
+                        ...old.door,
+                        data : {
+                            renderCount : old.door.data.renderCount + 1,
+                            open : !old.door.data.open
+                        }
+                    }
+                }))}
             />
            
             {testing ?
