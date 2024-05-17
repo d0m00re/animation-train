@@ -3,15 +3,12 @@ import * as model from "../../models";
 import * as THREE from "three";
 import { useState, useEffect, useRef } from 'react';
 import useInput from "../../hooks/useInput";
-import { useFrame, useThree } from '@react-three/fiber';
+import { RootState, useFrame, useThree } from '@react-three/fiber';
 import { IPlayer, TAnimationType, animationNameDico } from './MyPlayer.types';
-import { directionOffset } from './MyPlayer.utils';
+import { checkIsOverlap, directionOffset } from './MyPlayer.utils';
 import { IObjectInfo } from '../MainObject/mainObject';
-import { isOverlaping } from '../Tree/utils.tree';
 import { IVect3d } from '../Door/door.entity';
-
-const GRAVITY = -9.8;
-const JUMP_FORCE = 5;
+import { decrementByPointOne, incrementByPointOne } from '../../utils/incrDecrFixed';
 
 let walkDirection = new THREE.Vector3();
 let rotateAngle = new THREE.Vector3(0, 1, 0);
@@ -22,17 +19,7 @@ interface IMyPlayer {
     animationType: TAnimationType;
     player: IPlayer;
     setPlayer: (props: IPlayer) => void;
-
     globalObject: IObjectInfo;
-}
-
-//-------- precision
-function incrementByPointOne(value: number, incr: number) {
-    return (parseFloat((value + incr).toFixed(10)));
-}
-
-function decrementByPointOne(value: number, decr: number) {
-    return (parseFloat((value - decr).toFixed(10)));
 }
 //----------------
 
@@ -41,7 +28,6 @@ const checkIfPlayerMoove = (currentAction: React.MutableRefObject<string>) => {
         currentAction.current === animationNameDico.walking ||
         currentAction.current === animationNameDico.walkingBackward
 }
-
 
 // determine if an object is present on a specific position
 // fiou too many things inside
@@ -57,9 +43,6 @@ const MyPlayer = (props: IMyPlayer) => {
 
     // State for vertical position and velocity
     const verticalVelocityRef = useRef<number>(0);
-    const [isJumping, setIsJumping] = useState(false);
-
-
     scene.scale.set(0.2, 0.2, 0.2);
 
     const updateCameraTarget = (moveX: number, moveZ: number) => {
@@ -119,53 +102,9 @@ const MyPlayer = (props: IMyPlayer) => {
         //  console.log({ forward, backward, left, right, jump, shift})
     }, [forward, backward, left, right, jump, shift]);
 
-    const checkIsOverlap = (futurPos : IVect3d) : boolean => {
-        let overlaping = isOverlaping(
-            props.globalObject.trees.length,
-            { position: futurPos, boundingBox: props.player.boundingBox },
-            props.globalObject.trees
-        );
-
-        if (overlaping) return true;
-        // ----
-        overlaping = isOverlaping(
-            1,
-            { position: futurPos, boundingBox: props.player.boundingBox },
-            [props.globalObject.door]
-        )
-
-        if (!props.globalObject.door.data.open && overlaping) return true;
-
-        // check global object checker
-        const objects: any[] = [];
-        three.scene.traverse((child) => {
-            // @ts-ignore
-            if (child.isMesh && ((child.name === "boxWall") || (child.name === "boxTower") || (child.name === "boxPlatform"))) {
-                //   console.log("is mesh")
-                //   console.log(child);
-                const box = new THREE.Box3().setFromObject(child);
-                if (box.containsPoint(new THREE.Vector3(futurPos[0], futurPos[1], futurPos[2]))) {
-                    objects.push(child);
-                }
-            }
-        })
-        if (objects.length) {
-            console.log("box wall/tower/platform find\n")
-            return true;
-        }
-
-        return false;
-    }
-
-
     // too may things in it?
     useFrame((state, delta) => {
-        // walking or running
-
         let moovementPerform = false;
-        //let moveX = 0;
-        //let moveY = 0;
-        //let moveZ = 0;
 
         // moove to aplied to the player
         let absMoove: IVect3d = [0, 0, 0];
@@ -182,7 +121,6 @@ const MyPlayer = (props: IMyPlayer) => {
         if (isPlayerMooving) {
             moovementPerform = true;
 
-            // --------------------------
             // calcul next moovements
             let angleYCameraDirection = Math.atan2(
                 camera.position.x - scene.position.x,
@@ -214,37 +152,12 @@ const MyPlayer = (props: IMyPlayer) => {
             // run/walk velocity
             const velocity = currentAction.current === animationNameDico.running ? 10 : 5;
 
-            // movemodel & camera
+            // move model & camera
             absMoove[0] = walkDirection.x * velocity * delta;
             absMoove[2] = walkDirection.z * velocity * delta;
 
             futurPos[0] += absMoove[0];
             futurPos[2] += absMoove[2];
-            //-------------------------------------------------
-            //---------------------------------------
-        }
-        if (moovementPerform) {
-            // collision checker
-            // box collision checker  on tree
-            // START
-            
-            // ----
-            if (checkIsOverlap(futurPos)) {
-                console.log("something overlap")
-                return ;
-            }
-            // END
-
-            // add to caracter
-            scene.position.x = futurPos[0];
-            scene.position.z = futurPos[2];
-
-            // @ts-ignore
-            //    console.log("Player position : ",  [scene.position.x, props.player.pos[1], scene.position.z] )
-            props.setPlayer({ ...props.player, pos: [scene.position.x, props.player.pos[1], scene.position.z] });
-
-            // update camera pos - fix that later we don t have y here too
-            updateCameraTarget(absMoove[0], absMoove[2]);
         }
 
         //incrementByPointOne
@@ -253,15 +166,36 @@ const MyPlayer = (props: IMyPlayer) => {
             verticalVelocityRef.current = 1;
         }
         if (verticalVelocityRef.current > 0) {
-            console.log(`vertical velocity : `, verticalVelocityRef.current)
-            scene.position.y = incrementByPointOne(scene.position.y, 0.05);
+            moovementPerform = true;
+            futurPos[1] = incrementByPointOne(futurPos[1], 0.05);
             verticalVelocityRef.current = decrementByPointOne(verticalVelocityRef.current, 0.05);
         }
         else if (scene.position.y > 0) {
-            scene.position.y = decrementByPointOne(scene.position.y, 0.05);
+            futurPos[1] = decrementByPointOne(futurPos[1], 0.05);
         }
 
-        // UPDATE POSITION IF NO OVERLAP
+        if (moovementPerform) {
+            //if overlap don t applied new position
+            if (checkIsOverlap({
+                futurPos: futurPos,
+                globalObject: props.globalObject,
+                player: props.player,
+                three: three
+            })) {
+                console.info("something overlap")
+                return;
+            }
+            // UPDATE POSITION IF NO OVERLAP
+            // add to caracter
+            scene.position.x = futurPos[0];
+            scene.position.y = futurPos[1]; // new
+            scene.position.z = futurPos[2];
+
+            props.setPlayer({ ...props.player, pos: futurPos });
+
+            // update camera pos - fix that later we don t have y here too
+            updateCameraTarget(absMoove[0], absMoove[2]);
+        }
     })
 
     return <>
