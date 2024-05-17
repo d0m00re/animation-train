@@ -23,13 +23,16 @@ interface IMyPlayer {
     globalObject: IObjectInfo;
 }
 
+// determine if an object is present on a specific position
+
 const MyPlayer = (props: IMyPlayer) => {
     const { animations, scene } = useGLTF(model.knight)
     const { actions } = useAnimations(animations, scene)
     const { forward, backward, left, right, jump, shift } = useInput();
     const currentAction = useRef("");
     const controlRef = useRef<typeof OrbitControls>();
-    const camera = useThree(state => state.camera)
+    const three = useThree()
+    const { camera } = three;
 
     scene.scale.set(0.2, 0.2, 0.2);
 
@@ -51,6 +54,12 @@ const MyPlayer = (props: IMyPlayer) => {
     }
 
     useEffect(() => {
+        // update player pos
+        scene.position.x = props.player.pos[0];
+        scene.position.y = props.player.pos[1];
+        scene.position.z = props.player.pos[2];
+
+        //
         updateCameraTarget(0, 0)
     }, [])
 
@@ -149,11 +158,29 @@ const MyPlayer = (props: IMyPlayer) => {
 
             if (!props.globalObject.door.data.open && overlaping) return;
 
+            // check global object checker
+            const objects: any[] = [];
+            three.scene.traverse((child) => {
+                // @ts-ignore
+                if (child.isMesh && (child.name === "boxWall") || (child.name === "boxTower")) {
+                    //   console.log("is mesh")
+                    //   console.log(child);
+                    const box = new THREE.Box3().setFromObject(child);
+                    if (box.containsPoint(new THREE.Vector3(futurPos[0], 0.5, futurPos[2]))) {
+                        objects.push(child);
+                    }
+                }
+            })
+            if (objects.length) {
+                console.log("box wall find\n")
+                return;
+            }
+
             // add to caracter
             scene.position.x = futurPos[0];
             scene.position.z = futurPos[2];
             // @ts-ignore
-        //    console.log("Player position : ",  [scene.position.x, props.player.pos[1], scene.position.z] )
+            //    console.log("Player position : ",  [scene.position.x, props.player.pos[1], scene.position.z] )
             props.setPlayer({ ...props.player, pos: [scene.position.x, props.player.pos[1], scene.position.z] });
 
             // update camera pos

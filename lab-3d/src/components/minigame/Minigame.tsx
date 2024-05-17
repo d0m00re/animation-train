@@ -9,6 +9,8 @@ import { IPlayer } from './components/MyPlayer/MyPlayer.types';
 import { IObjectInfo, makeEmptyObjectInfo } from './components/MainObject/mainObject';
 import Door from './components/Door/Door';
 import { IDoorObject } from './components/Door/door.entity';
+import Wall from './components/Wall/Wall';
+import Tower from './components/Tower/Tower';
 
 const Minigame = () => {
     const [objectInfo, setObjectInfo] = useState<IObjectInfo>(makeEmptyObjectInfo());
@@ -39,20 +41,20 @@ const Minigame = () => {
     const revOpenDoor = () => {
         setObjectInfo(old => ({
             ...old,
-            door : {
+            door: {
                 ...old.door,
-                data : {
-                    open : !old.door.data.open,
-                    renderCount : old.door.data.renderCount + 1
+                data: {
+                    open: !old.door.data.open,
+                    renderCount: old.door.data.renderCount + 1
                 }
             }
         }))
     }
 
     useEffect(() => {
-     
+
     }, [objectInfo])
-    
+
 
     return (
         <>
@@ -65,6 +67,7 @@ const Minigame = () => {
                 globalObject={objectInfo}
             />
 
+            {/*
             <Tree
                 boundary={10}
                 count={5}
@@ -72,23 +75,38 @@ const Minigame = () => {
                 setTrees={setTrees}
                 globalObject={objectInfo}
             />
+            */}
 
             <Door
-                onClick={() => {  }}
+                onClick={() => { }}
                 door={objectInfo.door}
                 globalObject={objectInfo}
                 revOpenDoor={() => setObjectInfo(old => ({
                     ...old,
-                    door : {
+                    door: {
                         ...old.door,
-                        data : {
-                            renderCount : old.door.data.renderCount + 1,
-                            open : !old.door.data.open
+                        data: {
+                            renderCount: old.door.data.renderCount + 1,
+                            open: !old.door.data.open
                         }
                     }
                 }))}
             />
-           
+
+            {objectInfo.walls.map(wall => <Wall
+                key={`wall-${wall.id}`}
+                globalObject={objectInfo}
+                wall={wall}
+            />)
+            }
+
+            {objectInfo.towers.map(tower => <Tower
+                key={`tower-${tower.id}`}
+                globalObject={objectInfo}
+                wall={tower}
+            />)
+            }
+
             {testing ?
                 <>
                     <axesHelper args={[2]} />
