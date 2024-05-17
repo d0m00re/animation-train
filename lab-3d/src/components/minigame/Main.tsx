@@ -10,6 +10,8 @@ import Door from './components/Door/Door';
 import { IDoorObject } from './components/Door/door.entity';
 import Wall from './components/Wall/Wall';
 import Tower from './components/Tower/Tower';
+import * as model from "./models";
+import GenBasicObjRender from './components/GenBasicObjRender/GenBasicObjRender';
 
 const Main = () => {
     const [objectInfo, setObjectInfo] = useState<IObjectInfo>(makeEmptyObjectInfo());
@@ -91,13 +93,30 @@ const Main = () => {
                     }
                 }))}
             />
-
-            {objectInfo.walls.map(wall => <Wall
+            {objectInfo.walls.map(wall => <GenBasicObjRender
+                id={wall.id}
                 key={`wall-${wall.id}`}
                 globalObject={objectInfo}
-                wall={wall}
+                pos={wall.pos}
+                rot={wall.rot}
+                boundingBox={wall.boundingBox}
+                objPath={model.wall}
+                name={"Wall"}
             />)
             }
+
+            {objectInfo.towers.map(tower => <GenBasicObjRender
+                id={tower.id}
+                key={`wall-${tower.id}`}
+                globalObject={objectInfo}
+                pos={tower.pos}
+                rot={tower.rot}
+                boundingBox={tower.boundingBox}
+                objPath={model.tower}
+                name={"Tower"}
+            />)
+            }
+
 
             {objectInfo.towers.map(tower => <Tower
                 key={`tower-${tower.id}`}
