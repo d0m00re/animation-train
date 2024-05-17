@@ -1,6 +1,5 @@
 import { Stats } from '@react-three/drei'
 import Lights from './components/Lights';
-import Tree from './components/Tree';
 import MainPlane from './components/MainPlane';
 import MyPlayer from './components/MyPlayer';
 import { useEffect, useState } from 'react';
@@ -12,7 +11,7 @@ import { IDoorObject } from './components/Door/door.entity';
 import Wall from './components/Wall/Wall';
 import Tower from './components/Tower/Tower';
 
-const Minigame = () => {
+const Main = () => {
     const [objectInfo, setObjectInfo] = useState<IObjectInfo>(makeEmptyObjectInfo());
 
     const testing = false;
@@ -118,4 +117,4 @@ const Minigame = () => {
     )
 }
 
-export default Minigame
+export default Main;

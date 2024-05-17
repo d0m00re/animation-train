@@ -11,7 +11,7 @@ interface ITowerProps {
 
 function Tower(props: ITowerProps) {
     const meshRef = useRef();
-    const { scene } = useGLTF(model.tower1);
+    const { scene } = useGLTF(model.tower);
 
   return (
     <object3D position={props.wall.pos} rotation={props.wall.rot} scale={[1,0.5,1]}>

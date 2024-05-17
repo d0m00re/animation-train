@@ -11,7 +11,7 @@ interface IWallProps {
 
 function Wall(props: IWallProps) {
     const meshRef = useRef();
-    const { scene } = useGLTF(model.murailleWall);
+    const { scene } = useGLTF(model.wall);
 
   return (
     <object3D position={props.wall.pos} rotation={props.wall.rot}>

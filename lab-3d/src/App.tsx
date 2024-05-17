@@ -1,15 +1,13 @@
-import { Suspense } from "react";
 import * as THREE from "@react-three/fiber";
 
-import Fdf from "./components/fdf/fdfV2";
-import Minigame from "./components/minigame/Minigame";
+import Main from "./components/minigame/Main";
 
 function App() {
   return (
     <div id="canvas-container" style={{ width: "100vw", height: "100vh" }}>
 
     <THREE.Canvas shadows>
-      <Minigame />
+      <Main />
     </THREE.Canvas>
     </div>
   )

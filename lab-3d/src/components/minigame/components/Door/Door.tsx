@@ -35,7 +35,7 @@ function Door(props: IDoor) {
     const propsRef = useRef(props);
     const threeRef = useRef(three);
 
-    const { animations, scene } = useGLTF(model.doorTest)
+    const { animations, scene } = useGLTF(model.doorAnim)
     const { actions } = useAnimations(animations, scene);
 
     // action click
