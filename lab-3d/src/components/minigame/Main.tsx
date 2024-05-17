@@ -8,8 +8,6 @@ import { IPlayer } from './components/MyPlayer/MyPlayer.types';
 import { IObjectInfo, makeEmptyObjectInfo } from './components/MainObject/mainObject';
 import Door from './components/Door/Door';
 import { IDoorObject } from './components/Door/door.entity';
-import Wall from './components/Wall/Wall';
-import Tower from './components/Tower/Tower';
 import * as model from "./models";
 import GenBasicObjRender from './components/GenBasicObjRender/GenBasicObjRender';
 
@@ -117,11 +115,15 @@ const Main = () => {
             />)
             }
 
-
-            {objectInfo.towers.map(tower => <Tower
-                key={`tower-${tower.id}`}
+            {objectInfo.platform.map(platform => <GenBasicObjRender
+                id={platform.id}
+                key={`platform-${platform.id}`}
                 globalObject={objectInfo}
-                wall={tower}
+                pos={platform.pos}
+                rot={platform.rot}
+                boundingBox={platform.boundingBox}
+                objPath={model.platform}
+                name={"Platform"}
             />)
             }
 

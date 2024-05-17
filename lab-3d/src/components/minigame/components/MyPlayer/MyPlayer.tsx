@@ -1,7 +1,7 @@
 import { OrbitControls, useAnimations, useGLTF } from '@react-three/drei'
 import * as model from "../../models";
 import * as THREE from "three";
-import { useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import useInput from "../../hooks/useInput";
 import { useFrame, useThree } from '@react-three/fiber';
 import { IPlayer, TAnimationType, animationNameDico } from './MyPlayer.types';
@@ -9,6 +9,9 @@ import { directionOffset } from './MyPlayer.utils';
 import { IObjectInfo } from '../MainObject/mainObject';
 import { isOverlaping } from '../Tree/utils.tree';
 import { IVect3d } from '../Door/door.entity';
+
+const GRAVITY = -9.8;
+const JUMP_FORCE = 5;
 
 let walkDirection = new THREE.Vector3();
 let rotateAngle = new THREE.Vector3(0, 1, 0);
@@ -23,16 +26,33 @@ interface IMyPlayer {
     globalObject: IObjectInfo;
 }
 
-// determine if an object is present on a specific position
+//-------- precision
+function incrementByPointOne(value : number, incr : number) {
+    return (parseFloat((value + incr).toFixed(10)));
+}
 
+function decrementByPointOne(value : number, decr : number) {
+    return (parseFloat((value - decr).toFixed(10)));
+}
+//----------------
+
+
+// determine if an object is present on a specific position
+// fiou too many things inside
 const MyPlayer = (props: IMyPlayer) => {
     const { animations, scene } = useGLTF(model.knight)
     const { actions } = useAnimations(animations, scene)
     const { forward, backward, left, right, jump, shift } = useInput();
     const currentAction = useRef("");
     const controlRef = useRef<typeof OrbitControls>();
+    const sceneRef = useRef<any>();
     const three = useThree()
     const { camera } = three;
+
+    // State for vertical position and velocity
+    const verticalVelocityRef = useRef<number>(0);
+    const [isJumping, setIsJumping] = useState(false);
+
 
     scene.scale.set(0.2, 0.2, 0.2);
 
@@ -53,13 +73,12 @@ const MyPlayer = (props: IMyPlayer) => {
         }
     }
 
+    // initial state
     useEffect(() => {
         // update player pos
         scene.position.x = props.player.pos[0];
         scene.position.y = props.player.pos[1];
         scene.position.z = props.player.pos[2];
-
-        //
         updateCameraTarget(0, 0)
     }, [])
 
@@ -95,10 +114,13 @@ const MyPlayer = (props: IMyPlayer) => {
     }, [forward, backward, left, right, jump, shift]);
 
 
+    // too may things in it?
     useFrame((state, delta) => {
         // walking or running
 
-        if (currentAction.current === animationNameDico.running || currentAction.current === animationNameDico.walking || currentAction.current === animationNameDico.walkingBackward) {
+        if (currentAction.current === animationNameDico.running ||
+            currentAction.current === animationNameDico.walking ||
+            currentAction.current === animationNameDico.walkingBackward) {
             let angleYCameraDirection = Math.atan2(
                 camera.position.x - scene.position.x,
                 camera.position.z - scene.position.z
@@ -136,7 +158,7 @@ const MyPlayer = (props: IMyPlayer) => {
 
             const futurPos: IVect3d = [
                 scene.position.x + moveX,
-                0,
+                scene.position.y,
                 scene.position.z + moveZ
             ];
 
@@ -162,11 +184,11 @@ const MyPlayer = (props: IMyPlayer) => {
             const objects: any[] = [];
             three.scene.traverse((child) => {
                 // @ts-ignore
-                if (child.isMesh && (child.name === "boxWall") || (child.name === "boxTower")) {
+                if (child.isMesh && ((child.name === "boxWall") || (child.name === "boxTower") || (child.name === "boxPlatform"))) {
                     //   console.log("is mesh")
                     //   console.log(child);
                     const box = new THREE.Box3().setFromObject(child);
-                    if (box.containsPoint(new THREE.Vector3(futurPos[0], 0.5, futurPos[2]))) {
+                    if (box.containsPoint(new THREE.Vector3(futurPos[0], futurPos[1], futurPos[2]))) {
                         objects.push(child);
                     }
                 }
@@ -179,6 +201,8 @@ const MyPlayer = (props: IMyPlayer) => {
             // add to caracter
             scene.position.x = futurPos[0];
             scene.position.z = futurPos[2];
+            console.log("player position")
+            console.log(scene.position)
             // @ts-ignore
             //    console.log("Player position : ",  [scene.position.x, props.player.pos[1], scene.position.z] )
             props.setPlayer({ ...props.player, pos: [scene.position.x, props.player.pos[1], scene.position.z] });
@@ -186,12 +210,31 @@ const MyPlayer = (props: IMyPlayer) => {
             // update camera pos
             updateCameraTarget(moveX, moveZ)
         }
+
+        //incrementByPointOne
+        //----------------------------------------
+        if (jump && !verticalVelocityRef.current && scene.position.y === 0) {
+            verticalVelocityRef.current = 1;
+        }
+        if (verticalVelocityRef.current > 0) {
+            console.log(`vertical velocity : `, verticalVelocityRef.current)
+            scene.position.y = incrementByPointOne(scene.position.y, 0.05);
+            verticalVelocityRef.current = decrementByPointOne(verticalVelocityRef.current,  0.05);
+        }
+        else if (scene.position.y > 0) {
+            scene.position.y = decrementByPointOne(scene.position.y,  0.05);
+        }
+
+
+        //----------------------------
+
+        //if (currentAction.current === animationNameDico.jump) {}
     })
 
     return <>
         {/*@ts-ignore*/}
         <OrbitControls ref={controlRef} enableZoom={true} minDistance={2} maxDistance={4} />
-        <primitive object={scene} />
+        <primitive ref={sceneRef} object={scene} />
         <mesh
             scale={props.player.boundingBox}
             position={[scene.position.x, scene.position.y, scene.position.z]}

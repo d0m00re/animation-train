@@ -6,6 +6,9 @@ import fakeHouse from "./fakeHouse.glb";
 import wall from "./wall.glb";
 import tower from "./tower.glb";
 
+import platform from "./platform.glb";
+
+
 export {
     tree,
     knight,
@@ -13,5 +16,7 @@ export {
 
     fakeHouse,
     wall,
-    tower
+    tower,
+
+    platform
 }

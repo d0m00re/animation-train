@@ -5,12 +5,20 @@ import { ITowerEntity } from "../Tower/tower.entity";
 import { treeType } from "../Tree/tree.types";
 import { IWallEntity } from "../Wall/wall.entity";
 
+export interface IPlatformEntity {
+    id : number;
+    pos : IVect3d;
+    rot : IVect3d;
+    boundingBox : IVect3d;
+}
+
 export interface IObjectInfo {
     player: IPlayer;
     trees: treeType[];
     door: IDoorObject;
     walls: IWallEntity[];
     towers : ITowerEntity[];
+    platform : IPlatformEntity[];
 }
 
 export const WALL_BOUNDING_BOX : IVect3d = [3.6, 9, 8.65];
@@ -21,7 +29,7 @@ export const makeEmptyObjectInfo = (): IObjectInfo => {
     return ({
         player: {
             pos : [0,0,-10],
-            boundingBox : [1,1,1]
+            boundingBox : [0.5, 0.5, 0.5]
         },
         trees: [],
         door: {
@@ -32,6 +40,14 @@ export const makeEmptyObjectInfo = (): IObjectInfo => {
                 renderCount: 0
             }
         },
+        platform: [
+            {
+                id : 0,
+                pos: [3, 0, -20],
+                rot : [0, 0, 0],
+                boundingBox: [3.36,  1, 2,]
+            }
+        ],
         walls: [
             // front wall
             {
