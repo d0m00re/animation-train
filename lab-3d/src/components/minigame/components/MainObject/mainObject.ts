@@ -30,6 +30,9 @@ export const DOOR_ZERO_H = DOOR_BOUNDING_BOX[1] / 2;
 export const TOWER_BOUNDING_BOX : IVect3d = [9, 20, 9.86];
 export const TOWER_ZERO_H = TOWER_BOUNDING_BOX[1] / 2;
 
+export const PLATFORM_BOUNDING_BOX : IVect3d = [3.36,  1, 2,];
+export const PLATFORM_ZERO_H = PLATFORM_BOUNDING_BOX[1] / 2;
+
 export const makeEmptyObjectInfo = (): IObjectInfo => {
     return ({
         player: {
@@ -50,8 +53,31 @@ export const makeEmptyObjectInfo = (): IObjectInfo => {
                 id : 0,
                 pos: [3, 0, -20],
                 rot : [0, 0, 0],
-                boundingBox: [3.36,  1, 2,]
-            }
+                boundingBox: PLATFORM_BOUNDING_BOX
+            },
+            {
+                id : 1,
+                pos: [3, 0.5, -22],
+                rot : [0, 0, 0],
+                boundingBox: PLATFORM_BOUNDING_BOX
+            }, {
+                id : 2,
+                pos: [3, 1, -24],
+                rot : [0, 0, 0],
+                boundingBox: PLATFORM_BOUNDING_BOX
+            }, {
+                id : 3,
+                pos: [4.5, 1.5, -24],
+                rot : [0, 0, 0],
+                boundingBox: PLATFORM_BOUNDING_BOX
+            },
+            {
+                id : 3,
+                pos: [5.5, 2, -24],
+                rot : [0, 0, 0],
+                boundingBox: PLATFORM_BOUNDING_BOX
+            },
+
         ],
         walls: [
             // front wall

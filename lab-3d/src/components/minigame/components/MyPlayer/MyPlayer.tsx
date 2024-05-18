@@ -45,9 +45,9 @@ const MyPlayer = (props: IMyPlayer) => {
     const verticalVelocityRef = useRef<number>(0);
     scene.scale.set(0.2, 0.2, 0.2);
 
-    const updateCameraTarget = (moveX: number, moveZ: number) => {
+    const updateCameraTarget = (moveX: number, moveY : number, moveZ: number) => {
         // move camera
-        camera.position.y = 1.3;
+        camera.position.y += moveY //= 1.3;
         camera.position.x += moveX;
         camera.position.z += moveZ;
 
@@ -68,7 +68,7 @@ const MyPlayer = (props: IMyPlayer) => {
         scene.position.x = props.player.pos[0];
         scene.position.y = props.player.pos[1];
         scene.position.z = props.player.pos[2];
-        updateCameraTarget(0, 0)
+        updateCameraTarget(0, 0, 0)
     }, [])
 
 
@@ -164,11 +164,13 @@ const MyPlayer = (props: IMyPlayer) => {
         // scene.position.y > 0 : check plan
 
         //-------- J - U - M - P -----------------
-        if (jump && !verticalVelocityRef.current && scene.position.y === 0) {
+        if (jump && verticalVelocityRef.current === 0) {
+            console.log("wtf update ref from : ", verticalVelocityRef.current)
             verticalVelocityRef.current = 1;
         }
 
         if (verticalVelocityRef.current > 0) {
+            console.log(verticalVelocityRef.current)
             moovementPerform = true;
             futurPos[1] = incrementByPointOne(futurPos[1], 0.05);
             verticalVelocityRef.current = decrementByPointOne(verticalVelocityRef.current, 0.05);
@@ -190,30 +192,8 @@ const MyPlayer = (props: IMyPlayer) => {
                 futurPos = dupFuturPos;
             }
         }
-        //-------
 
-        /*
-        if (!verticalVelocityRef.current && scene.position.y > 0) {
-            moovementPerform = true;
-            futurPos[1] = decrementByPointOne(futurPos[1], 0.05);
-        }
-        */
-
-        //incrementByPointOne
-        //----------------------------------------
-        /*
-        
-        if (verticalVelocityRef.current > 0) {
-            moovementPerform = true;
-            futurPos[1] = incrementByPointOne(futurPos[1], 0.05);
-            verticalVelocityRef.current = decrementByPointOne(verticalVelocityRef.current, 0.05);
-        }
-        // rework this part
-        else if (scene.position.y > 0) {
-            moovementPerform = true;
-            futurPos[1] = decrementByPointOne(futurPos[1], 0.05);
-        }
-        */
+        //-----------------------------------
 
         if (moovementPerform) {
             //if overlap don t applied new position
@@ -228,6 +208,7 @@ const MyPlayer = (props: IMyPlayer) => {
             }
             // UPDATE POSITION IF NO OVERLAP
             // add to caracter
+            absMoove[1] = futurPos[1] - scene.position.y
             scene.position.x = futurPos[0];
             scene.position.y = futurPos[1]; // new
             scene.position.z = futurPos[2];
@@ -235,7 +216,7 @@ const MyPlayer = (props: IMyPlayer) => {
             props.setPlayer({ ...props.player, pos: futurPos });
 
             // update camera pos - fix that later we don t have y here too
-            updateCameraTarget(absMoove[0], absMoove[2]);
+            updateCameraTarget(absMoove[0], absMoove[1], absMoove[2]);
         }
     })
 
