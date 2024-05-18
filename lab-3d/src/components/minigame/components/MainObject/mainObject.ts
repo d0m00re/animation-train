@@ -34,7 +34,7 @@ export const makeEmptyObjectInfo = (): IObjectInfo => {
     return ({
         player: {
             pos : [0,0,-10],
-            boundingBox : [0.5, 0.5, 0.5]
+            boundingBox : [0.5, 0.55, 0.5]
         },
         trees: [],
         door: {

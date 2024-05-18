@@ -171,6 +171,7 @@ const MyPlayer = (props: IMyPlayer) => {
             verticalVelocityRef.current = decrementByPointOne(verticalVelocityRef.current, 0.05);
         }
         else if (scene.position.y > 0) {
+            moovementPerform = true;
             futurPos[1] = decrementByPointOne(futurPos[1], 0.05);
         }
 
