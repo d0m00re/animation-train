@@ -204,7 +204,7 @@ const MyPlayer = (props: IMyPlayer) => {
         <primitive ref={sceneRef} object={scene} />
         <mesh
             scale={props.player.boundingBox}
-            position={[scene.position.x, scene.position.y, scene.position.z]}
+            position={[scene.position.x, scene.position.y + 0.25, scene.position.z]}
         >
             <boxGeometry />
             <meshBasicMaterial color="yellow" wireframe />

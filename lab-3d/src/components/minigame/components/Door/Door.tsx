@@ -32,7 +32,7 @@ type IDoor = {
     globalObject: IObjectInfo;
 }
 
-const openDoorAnimationNameList: string[] = ["openDoorR", "openDoorL"];
+const openDoorAnimationNameList: string[] = ["openDoorRV2", "openDoorLV2"];
 //const closeDoorAnimationNameList : string[] = ["closeDoorR", "closeDoorL"];
 //const openCloseAnimList : [string, string] = ["fullDoorAnimR", "fullDoorAnimL"];
 
@@ -98,7 +98,8 @@ function Door(props: IDoor) {
         let animListName = openDoorAnimationNameList;//openCloseAnimList;//getAnimationList(props.door.data.open);
 
         // problemcome when i play 2 animation, that s don t reset init  door pos
-
+        console.log("possible action")
+        console.log(actions)
         animListName.map((animName) => {
             let anim = actions[animName];
             if (!anim) {
@@ -106,10 +107,8 @@ function Door(props: IDoor) {
                 return;
             }
             anim.reset();
-            //anim.time = 0;//duration / 2;
             anim.timeScale = (props.door.data.open) ? 1 : -1;
             anim.repetitions = 1;
-            // anim.timeScale = 10;
             anim.clampWhenFinished = true;
             anim.play();
         });
@@ -118,8 +117,8 @@ function Door(props: IDoor) {
     // collision detect
 
     return (
-        <object3D position={[0, 0, -5]}>
-            <mesh scale={[2.5, 3, 0.9]}>
+        <object3D position={props.door.position}>
+            <mesh scale={props.door.boundingBox}>
                 <boxGeometry />
                 <meshBasicMaterial color="blue" wireframe />
             </mesh>
