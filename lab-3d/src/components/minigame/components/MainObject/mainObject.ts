@@ -72,7 +72,7 @@ export const makeEmptyObjectInfo = (): IObjectInfo => {
                 boundingBox: PLATFORM_BOUNDING_BOX
             },
             {
-                id : 3,
+                id : 4,
                 pos: [5.5, 2, -24],
                 rot : [0, 0, 0],
                 boundingBox: PLATFORM_BOUNDING_BOX

@@ -1,7 +1,7 @@
 import { OrbitControls, useAnimations, useGLTF } from '@react-three/drei'
 import * as model from "../../models";
 import * as THREE from "three";
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, RefObject } from 'react';
 import useInput from "../../hooks/useInput";
 import { RootState, useFrame, useThree } from '@react-three/fiber';
 import { IPlayer, TAnimationType, animationNameDico } from './MyPlayer.types';
@@ -9,6 +9,7 @@ import { checkIsOverlap, directionOffset, getAllSolidObjWtVect3d } from './MyPla
 import { IObjectInfo } from '../MainObject/mainObject';
 import { IVect3d } from '../Door/door.entity';
 import { decrementByPointOne, incrementByPointOne } from '../../utils/incrDecrFixed';
+import { getTerrainHeight, getTerrainHeightBilineareInterpolation } from '../Terrain/Terrain';
 
 let walkDirection = new THREE.Vector3();
 let rotateAngle = new THREE.Vector3(0, 1, 0);
@@ -20,6 +21,7 @@ interface IMyPlayer {
     player: IPlayer;
     setPlayer: (props: IPlayer) => void;
     globalObject: IObjectInfo;
+    terrainRef: React.RefObject<THREE.Mesh>;
 }
 //----------------
 
@@ -162,7 +164,7 @@ const MyPlayer = (props: IMyPlayer) => {
 
         // gravity check
         // scene.position.y > 0 : check plan
-
+/*
         //-------- J - U - M - P -----------------
         if (jump && verticalVelocityRef.current === 0) {
             console.log("wtf update ref from : ", verticalVelocityRef.current)
@@ -177,6 +179,7 @@ const MyPlayer = (props: IMyPlayer) => {
         }
         //---------------------------------
         // G-R-A-V-I-T-Y_C-H-E-C-K
+        
         if (verticalVelocityRef.current <= 0) {
             let dupFuturPos: IVect3d = [...futurPos];
             dupFuturPos[1] = decrementByPointOne(dupFuturPos[1], 0.05);
@@ -191,7 +194,7 @@ const MyPlayer = (props: IMyPlayer) => {
                 moovementPerform = true;
                 futurPos = dupFuturPos;
             }
-        }
+        }*/
 
         //-----------------------------------
 
@@ -210,13 +213,19 @@ const MyPlayer = (props: IMyPlayer) => {
             // add to caracter
             absMoove[1] = futurPos[1] - scene.position.y
             scene.position.x = futurPos[0];
-            scene.position.y = futurPos[1]; // new
+            scene.position.y = getTerrainHeightBilineareInterpolation(futurPos[0], futurPos[2], props.terrainRef);//futurPos[1]; // new
+          //  scene.position.y = getTerrainHeight(futurPos[0], futurPos[2], props.terrainRef);//futurPos[1]; // new
+
             scene.position.z = futurPos[2];
 
             props.setPlayer({ ...props.player, pos: futurPos });
 
             // update camera pos - fix that later we don t have y here too
             updateCameraTarget(absMoove[0], absMoove[1], absMoove[2]);
+
+            // test terrain height
+            let h = getTerrainHeightBilineareInterpolation(futurPos[0], futurPos[2], props.terrainRef);
+            console.log(`current height ${futurPos[0]} - ${futurPos[2]}: ${h}`)
         }
     })
 
@@ -233,6 +242,5 @@ const MyPlayer = (props: IMyPlayer) => {
         </mesh>
     </>
 }
-
 
 export default MyPlayer;

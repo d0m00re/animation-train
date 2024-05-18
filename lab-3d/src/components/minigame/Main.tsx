@@ -2,7 +2,7 @@ import { Stats } from '@react-three/drei'
 import Lights from './components/Lights';
 import MainPlane from './components/MainPlane';
 import MyPlayer from './components/MyPlayer';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { treeType } from './components/Tree/tree.types';
 import { IPlayer } from './components/MyPlayer/MyPlayer.types';
 import { IObjectInfo, makeEmptyObjectInfo } from './components/MainObject/mainObject';
@@ -10,9 +10,12 @@ import Door from './components/Door/Door';
 import { IDoorObject } from './components/Door/door.entity';
 import * as model from "./models";
 import GenBasicObjRender from './components/GenBasicObjRender/GenBasicObjRender';
+import Terrain from './components/Terrain/Terrain';
+import * as THREE from "three";
 
 const Main = () => {
     const [objectInfo, setObjectInfo] = useState<IObjectInfo>(makeEmptyObjectInfo());
+    const terrainRef = useRef<THREE.Mesh>(null);
 
     const testing = false;
 
@@ -57,9 +60,13 @@ const Main = () => {
 
     return (
         <>
+        {/*
             <MainPlane />
+    */}
+            <Terrain terrainRef={terrainRef}/>
             <Lights />
             <MyPlayer
+                terrainRef={terrainRef}
                 animationType="Walking_A"
                 player={objectInfo.player}
                 setPlayer={setPlayer}
