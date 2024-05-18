@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import useInput from "../../hooks/useInput";
 import { RootState, useFrame, useThree } from '@react-three/fiber';
 import { IPlayer, TAnimationType, animationNameDico } from './MyPlayer.types';
-import { checkIsOverlap, directionOffset } from './MyPlayer.utils';
+import { checkIsOverlap, directionOffset, getAllSolidObjWtVect3d } from './MyPlayer.utils';
 import { IObjectInfo } from '../MainObject/mainObject';
 import { IVect3d } from '../Door/door.entity';
 import { decrementByPointOne, incrementByPointOne } from '../../utils/incrDecrFixed';
@@ -162,18 +162,47 @@ const MyPlayer = (props: IMyPlayer) => {
 
         // gravity check
         // scene.position.y > 0 : check plan
-        
+
+        //-------- J - U - M - P -----------------
+        if (jump && !verticalVelocityRef.current && scene.position.y === 0) {
+            verticalVelocityRef.current = 1;
+        }
+
+        if (verticalVelocityRef.current > 0) {
+            moovementPerform = true;
+            futurPos[1] = incrementByPointOne(futurPos[1], 0.05);
+            verticalVelocityRef.current = decrementByPointOne(verticalVelocityRef.current, 0.05);
+        }
+        //---------------------------------
+        // G-R-A-V-I-T-Y_C-H-E-C-K
+        if (verticalVelocityRef.current <= 0) {
+            let dupFuturPos: IVect3d = [...futurPos];
+            dupFuturPos[1] = decrementByPointOne(dupFuturPos[1], 0.05);
+            // get object
+            let checkObject = getAllSolidObjWtVect3d({
+                three: three,
+                futurPos: dupFuturPos
+            });
+
+            // no object contact so we fall 
+            if (checkObject.length === 0 && scene.position.y > 0) {
+                moovementPerform = true;
+                futurPos = dupFuturPos;
+            }
+        }
+        //-------
+
+        /*
         if (!verticalVelocityRef.current && scene.position.y > 0) {
             moovementPerform = true;
             futurPos[1] = decrementByPointOne(futurPos[1], 0.05);
         }
+        */
 
         //incrementByPointOne
         //----------------------------------------
         /*
-        if (jump && !verticalVelocityRef.current && scene.position.y === 0) {
-            verticalVelocityRef.current = 1;
-        }
+        
         if (verticalVelocityRef.current > 0) {
             moovementPerform = true;
             futurPos[1] = incrementByPointOne(futurPos[1], 0.05);

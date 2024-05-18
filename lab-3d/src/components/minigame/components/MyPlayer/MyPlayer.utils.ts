@@ -72,11 +72,11 @@ interface IGetAllObjWtVect3d {
 const C_SOLID_MESH_OBJECT : string[] = ["boxWall", "boxTower", "boxPlatform"];
 
 /**
- * get all object wich contains futurPos pts
+ * get all object wich contains futurPos pts (abstract later)
  * @param props 
  * @returns 
  */
-const getAllObjWtVect3d = (props: IGetAllObjWtVect3d) => {
+export const getAllSolidObjWtVect3d = (props: IGetAllObjWtVect3d) => {
     const objects: any[] = [];
     props.three.scene.traverse((child) => {
         if (threeObjectFilter({
@@ -133,7 +133,7 @@ const checkIsOverlap = (props: ICheckIsOverlap): boolean => {
     // ---------------------------------
 
     // check global object checker
-    const objects = getAllObjWtVect3d({ futurPos: props.futurPos, three: props.three });
+    const objects = getAllSolidObjWtVect3d({ futurPos: props.futurPos, three: props.three });
 
     if (objects.length) {
         console.log("box wall/tower/platform find\n")
