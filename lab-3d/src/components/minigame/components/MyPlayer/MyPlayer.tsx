@@ -160,8 +160,17 @@ const MyPlayer = (props: IMyPlayer) => {
             futurPos[2] += absMoove[2];
         }
 
+        // gravity check
+        // scene.position.y > 0 : check plan
+        
+        if (!verticalVelocityRef.current && scene.position.y > 0) {
+            moovementPerform = true;
+            futurPos[1] = decrementByPointOne(futurPos[1], 0.05);
+        }
+
         //incrementByPointOne
         //----------------------------------------
+        /*
         if (jump && !verticalVelocityRef.current && scene.position.y === 0) {
             verticalVelocityRef.current = 1;
         }
@@ -170,10 +179,12 @@ const MyPlayer = (props: IMyPlayer) => {
             futurPos[1] = incrementByPointOne(futurPos[1], 0.05);
             verticalVelocityRef.current = decrementByPointOne(verticalVelocityRef.current, 0.05);
         }
+        // rework this part
         else if (scene.position.y > 0) {
             moovementPerform = true;
             futurPos[1] = decrementByPointOne(futurPos[1], 0.05);
         }
+        */
 
         if (moovementPerform) {
             //if overlap don t applied new position
