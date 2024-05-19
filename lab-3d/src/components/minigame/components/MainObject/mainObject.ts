@@ -65,10 +65,42 @@ export const makeEmptyObjectInfo = (): IObjectInfo => {
                 pos : [-4, RAMPAGE_ZERO_H, -15],
                 rot : [0,0,0],
                 boundingBox : RAMPAGE_BOUNDING_BOX
+            }, {
+                id : 11111,
+                pos : [-4, RAMPAGE_ZERO_H, -15 - RAMPAGE_BOUNDING_BOX[2]],
+                rot : [0,Math.PI / 2,0],
+                boundingBox : RAMPAGE_BOUNDING_BOX
             }
         ],
         platform: [
-      
+            {
+                id : 0,
+                pos: [3, 0, -20],
+                rot : [0, 0, 0],
+                boundingBox: PLATFORM_BOUNDING_BOX
+            },
+            {
+                id : 1,
+                pos: [3, 0.5, -22],
+                rot : [0, 0, 0],
+                boundingBox: PLATFORM_BOUNDING_BOX
+            }, {
+                id : 2,
+                pos: [3, 1, -24],
+                rot : [0, 0, 0],
+                boundingBox: PLATFORM_BOUNDING_BOX
+            }, {
+                id : 3,
+                pos: [4.5, 1.5, -24],
+                rot : [0, 0, 0],
+                boundingBox: PLATFORM_BOUNDING_BOX
+            },
+            {
+                id : 4,
+                pos: [5.5, 2, -24],
+                rot : [0, 0, 0],
+                boundingBox: PLATFORM_BOUNDING_BOX
+            },
 
         ],
         walls: [
@@ -78,10 +110,170 @@ export const makeEmptyObjectInfo = (): IObjectInfo => {
                 pos: [5.5 + WALL_BOUNDING_BOX[2] * 0, WALL_ZERO_H, -5],
                 rot: [0, Math.PI / 2, 0],
                 boundingBox: WALL_BOUNDING_BOX
-            }
+            },
+            {
+                id: 1,
+                pos: [5.5 + WALL_BOUNDING_BOX[2] * 1, WALL_ZERO_H, -5],
+                rot: [0, Math.PI / 2, 0],
+                boundingBox: WALL_BOUNDING_BOX
+            }, 
+            {
+                id: 2,
+                pos: [5.5 + WALL_BOUNDING_BOX[2] * 2, WALL_ZERO_H, -5],
+                rot: [0, Math.PI / 2, 0],
+                boundingBox: WALL_BOUNDING_BOX
+            }, {
+                id: 3,
+                pos: [-5.5 - WALL_BOUNDING_BOX[2] * 0, WALL_ZERO_H, -5],
+                rot: [0, Math.PI / 2, 0],
+                boundingBox: WALL_BOUNDING_BOX
+            }, {
+                id: 4,
+                pos: [-5.5 - WALL_BOUNDING_BOX[2] * 1, WALL_ZERO_H, -5],
+                rot: [0, Math.PI / 2, 0],
+                boundingBox: WALL_BOUNDING_BOX
+            },
+            {
+                id: 5,
+                pos: [-5.5 - WALL_BOUNDING_BOX[2] * 2, WALL_ZERO_H, -5],
+                rot: [0, Math.PI / 2, 0],
+                boundingBox: WALL_BOUNDING_BOX
+            },
+
+            // back wall
+            {
+                id: 10,
+                pos: [5.5 + WALL_BOUNDING_BOX[2] * 0, WALL_ZERO_H, -50],
+                rot: [0, Math.PI / 2, 0],
+                boundingBox: WALL_BOUNDING_BOX
+            },
+            {
+                id: 11,
+                pos: [5.5 + WALL_BOUNDING_BOX[2] * 1, WALL_ZERO_H, -50],
+                rot: [0, Math.PI / 2, 0],
+                boundingBox: WALL_BOUNDING_BOX
+            }, 
+            {
+                id: 12,
+                pos: [5.5 + WALL_BOUNDING_BOX[2] * 2, WALL_ZERO_H, -50],
+                rot: [0, Math.PI / 2, 0],
+                boundingBox: WALL_BOUNDING_BOX
+            }, {
+                id: 13,
+                pos: [-5.5 - WALL_BOUNDING_BOX[2] * 0, WALL_ZERO_H, -50],
+                rot: [0, Math.PI / 2, 0],
+                boundingBox: WALL_BOUNDING_BOX
+            }, {
+                id: 14,
+                pos: [-5.5 - WALL_BOUNDING_BOX[2] * 1, WALL_ZERO_H, -50],
+                rot: [0, Math.PI / 2, 0],
+                boundingBox: WALL_BOUNDING_BOX
+            },
+            {
+                id: 15,
+                pos: [-5.5 - WALL_BOUNDING_BOX[2] * 2, WALL_ZERO_H, -50],
+                rot: [0, Math.PI / 2, 0],
+                boundingBox: WALL_BOUNDING_BOX
+            },
+
+            // left
+            {
+                id: 200,
+                pos: [-5.5 - WALL_BOUNDING_BOX[2] * 2 - TOWER_BOUNDING_BOX[2], WALL_ZERO_H, -10],
+                rot: [0, 0, 0],
+                boundingBox: WALL_BOUNDING_BOX
+            },
+            {
+                id: 201,
+                pos: [-5.5 - WALL_BOUNDING_BOX[2] * 2 - TOWER_BOUNDING_BOX[2], WALL_ZERO_H, -10 - WALL_BOUNDING_BOX[2]],
+                rot: [0, 0, 0],
+                boundingBox: WALL_BOUNDING_BOX
+            },
+            {
+                id: 202,
+                pos: [-5.5 - WALL_BOUNDING_BOX[2] * 2 - TOWER_BOUNDING_BOX[2], WALL_ZERO_H, -10 - WALL_BOUNDING_BOX[2] * 2],
+                rot: [0, 0, 0],
+                boundingBox: WALL_BOUNDING_BOX
+            },
+            {
+                id: 203,
+                pos: [-5.5 - WALL_BOUNDING_BOX[2] * 2 - TOWER_BOUNDING_BOX[2], WALL_ZERO_H, -10 - WALL_BOUNDING_BOX[2] * 3],
+                rot: [0, 0, 0],
+                boundingBox: WALL_BOUNDING_BOX
+            },
+            {
+                id: 204,
+                pos: [-5.5 - WALL_BOUNDING_BOX[2] * 2 - TOWER_BOUNDING_BOX[2], WALL_ZERO_H, -10 - WALL_BOUNDING_BOX[2] * 4],
+                rot: [0, 0, 0],
+                boundingBox: WALL_BOUNDING_BOX
+            },
+
+            // right
+            {
+                id: 300,
+                pos: [5.5 + WALL_BOUNDING_BOX[2] * 2 + TOWER_BOUNDING_BOX[2], WALL_ZERO_H, -10],
+                rot: [0, 0, 0],
+                boundingBox: WALL_BOUNDING_BOX
+            },
+            {
+                id: 301,
+                pos: [5.5 + WALL_BOUNDING_BOX[2] * 2 + TOWER_BOUNDING_BOX[2], WALL_ZERO_H, -10 - WALL_BOUNDING_BOX[2]],
+                rot: [0, 0, 0],
+                boundingBox: WALL_BOUNDING_BOX
+            },
+            {
+                id: 302,
+                pos: [5.5 + WALL_BOUNDING_BOX[2] * 2 + TOWER_BOUNDING_BOX[2], WALL_ZERO_H, -10 - WALL_BOUNDING_BOX[2] * 2],
+                rot: [0, 0, 0],
+                boundingBox: WALL_BOUNDING_BOX
+            },
+            {
+                id: 303,
+                pos: [5.5 + WALL_BOUNDING_BOX[2] * 2 + TOWER_BOUNDING_BOX[2], WALL_ZERO_H, -10 - WALL_BOUNDING_BOX[2] * 3],
+                rot: [0, 0, 0],
+                boundingBox: WALL_BOUNDING_BOX
+            },
+            {
+                id: 304,
+                pos: [5.5 + WALL_BOUNDING_BOX[2] * 2 + TOWER_BOUNDING_BOX[2], WALL_ZERO_H, -10 - WALL_BOUNDING_BOX[2] * 4],
+                rot: [0, 0, 0],
+                boundingBox: WALL_BOUNDING_BOX
+            },
 
         ],
-        towers : [  
+        towers : [
+            // front tower
+            {
+                id: 6,
+                pos: [4 + WALL_BOUNDING_BOX[2] * 2 + TOWER_BOUNDING_BOX[2] * 1, TOWER_ZERO_H, -5],
+                rot: [0, 0, 0],
+                boundingBox: TOWER_BOUNDING_BOX
+            }, {
+                id: 7,
+                pos: [-4 - WALL_BOUNDING_BOX[2] * 2 - TOWER_BOUNDING_BOX[2] * 1, TOWER_ZERO_H, -5],
+                rot: [0, 0, 0],
+                boundingBox: TOWER_BOUNDING_BOX
+            },
+
+            // back tower
+            {
+                id: 70,
+                pos: [4 + WALL_BOUNDING_BOX[2] * 2 + TOWER_BOUNDING_BOX[2] * 1, TOWER_ZERO_H, -50],
+                rot: [0, 0, 0],
+                boundingBox: TOWER_BOUNDING_BOX
+            }, {
+                id: 80,
+                pos: [-4 - WALL_BOUNDING_BOX[2] * 2 - TOWER_BOUNDING_BOX[2] * 1, TOWER_ZERO_H, -50],
+                rot: [0, 0, 0],
+                boundingBox: TOWER_BOUNDING_BOX
+            },
+            // behind tower center
+            {
+                id: 90,
+                pos: [0, TOWER_ZERO_H, -50],
+                rot: [0, 0, 0],
+                boundingBox: TOWER_BOUNDING_BOX
+            },
         ]
     })
 };

@@ -97,9 +97,6 @@ const MyPlayer = (props: IMyPlayer) => {
             nextActionToplay?.reset().fadeIn(0.2).play();
             currentAction.current = action;
         }
-
-        //  actions[props.animationType]?.play();
-        //  console.log({ forward, backward, left, right, jump, shift})
     }, [forward, backward, left, right, jump, shift]);
 
     const getPlayerMoovePos = ({ futurPos, delta, moovementPerform }: { futurPos: IVect3d, delta: number, moovementPerform: boolean }) => {
@@ -152,23 +149,16 @@ const MyPlayer = (props: IMyPlayer) => {
             new THREE.Vector3(...futurPos),
             new THREE.Vector3(0, 1, 0),
             0,
-            10.5 // max dist checker
+            1 // max dist checker
             //10  //euclideanDistance(props.player.pos, props.futurPos, true)
         );
 
         const intersectsTest: any[] = raycaster.intersectObjects(three.scene.children); //(threeRef.current.scene.children);
 
         const rampage = intersectsTest.filter(e => e.object.name === "rampage");
-        //console.log("New pts checker")
         // second pts
         if (rampage.length) {
-            //  console.log("New pts find let s go update our current pos")
-            //  console.log(rampage);
-            //  console.log(intersectsTest)
-
             let lastIntersect = rampage[rampage.length - 1];
-            // console.log("last intersect : ")
-            // console.log(lastIntersect)
             futurPos = [lastIntersect.point.x, lastIntersect.point.y, lastIntersect.point.z];
             //
             return futurPos;
@@ -185,7 +175,7 @@ const MyPlayer = (props: IMyPlayer) => {
         three.scene.updateWorldMatrix(true, true);
 
         // 
-        
+
         let dupFuturPos = [...futurPos];
         dupFuturPos[1] = 0;
         const raycaster = new THREE.Raycaster(
@@ -201,41 +191,22 @@ const MyPlayer = (props: IMyPlayer) => {
         let lastElement = intersectsTest[intersectsTest.length - 1];
 
         // only ground
-        
+
         if (intersectsTest.length === 0) {
-            console.log("fuck of len of 0 .....");
-            console.log(intersectsTest.length)
             if (futurPos[1] >= 0.1) {
-               // console.log("PREVIOUS VALUE : ", futurPos[1]);
+                // console.log("PREVIOUS VALUE : ", futurPos[1]);
                 futurPos[1] -= 0.05;
             } else
                 futurPos[1] = 0;
         }
         else if (lastElement) {
-
-        console.log("last elements : ")
-        console.log(lastElement)
-        // difference between 2 height, height of the player and height of the nearest elements
-        let diffHeight = futurPos[1] - lastElement.point.y;
-        if (diffHeight > 0.1) {
-            futurPos[1] -= 0.1;
-        } else {
-            futurPos[1] = lastElement.point.y + 0.01;
-        }
-        //     console.log("gravity checker");
-        //  console.log(intersectsTest)
-        //}
-        // go down directly
-        /*
-        if (intersectsTest.length) {// && intersectsTest[0].distance > 0.5) {
-            if (intersectsTest[0].distance > 1) {
-              futurPos[1] -= 0.01;
-              console.log(intersectsTest[0].distance)
+            // difference between 2 height, height of the player and height of the nearest elements
+            let diffHeight = futurPos[1] - lastElement.point.y;
+            if (diffHeight > 0.1) {
+                futurPos[1] -= 0.1;
+            } else {
+                futurPos[1] = lastElement.point.y + 0.01;
             }
-            //else
-            //    futurPos[1] = intersectsTest[0].point.y
-            // futurPos[1] = intersectsTest[0].point.y;
-        }*/
         }
 
         return futurPos;
@@ -261,7 +232,6 @@ const MyPlayer = (props: IMyPlayer) => {
         let isOverlap = false;
 
         if (moovementPerform) {
-
             // base moovement
             isOverlap = checkIsOverlap({
                 futurPos: futurPos,
@@ -282,8 +252,24 @@ const MyPlayer = (props: IMyPlayer) => {
 
         if (isOverlap) return;
 
+        // let s go jump
+        if (jump && verticalVelocityRef.current === 0) {
+            verticalVelocityRef.current = 1;
+            // check valid upper
+        }
+
+        //--------------------------------------------------
+
         // gravity check
-        futurPos = checkGravity({ futurPos });
+        if (verticalVelocityRef.current === 0)
+            futurPos = checkGravity({ futurPos });
+
+        //
+        if (verticalVelocityRef.current > 0) {
+            futurPos[1] = incrementByPointOne(futurPos[1], 0.05);
+            verticalVelocityRef.current = decrementByPointOne(verticalVelocityRef.current, 0.05);
+        }
+
 
         // UPDATE POSITION IF NO OVERLAP
         // add to caracter
