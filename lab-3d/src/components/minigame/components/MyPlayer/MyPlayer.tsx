@@ -147,7 +147,7 @@ const MyPlayer = (props: IMyPlayer) => {
         return { futurPos, absMoove, moovementPerform };
     }
 
-    const checkUpperCollision = ({futurPos} : {futurPos : IVect3d}) : IVect3d | undefined => {
+    const checkUpperCollision = ({ futurPos }: { futurPos: IVect3d }): IVect3d | undefined => {
         const raycaster = new THREE.Raycaster(
             new THREE.Vector3(...futurPos),
             new THREE.Vector3(0, 1, 0),
@@ -162,49 +162,83 @@ const MyPlayer = (props: IMyPlayer) => {
         //console.log("New pts checker")
         // second pts
         if (rampage.length) {
-          //  console.log("New pts find let s go update our current pos")
-          //  console.log(rampage);
-          //  console.log(intersectsTest)
-            
+            //  console.log("New pts find let s go update our current pos")
+            //  console.log(rampage);
+            //  console.log(intersectsTest)
+
             let lastIntersect = rampage[rampage.length - 1];
-           // console.log("last intersect : ")
-           // console.log(lastIntersect)
+            // console.log("last intersect : ")
+            // console.log(lastIntersect)
             futurPos = [lastIntersect.point.x, lastIntersect.point.y, lastIntersect.point.z];
             //
             return futurPos;
 
         } else {
-      //      console.log("new pts not found bitch")
-       //     console.log(intersectsTest)
+            //      console.log("new pts not found bitch")
+            //     console.log(intersectsTest)
             return undefined
         }
     }
 
     // basic gravity checker
-    const checkGravity = ({futurPos} : {futurPos : IVect3d}) => {
+    const checkGravity = ({ futurPos }: { futurPos: IVect3d }) => {
+        three.scene.updateWorldMatrix(true, true);
+
         // 
+        
         let dupFuturPos = [...futurPos];
-        dupFuturPos[1] += 0.1;
+        dupFuturPos[1] = 0;
         const raycaster = new THREE.Raycaster(
             new THREE.Vector3(...dupFuturPos),
-            new THREE.Vector3(0, -1, 0), // ground check
+            new THREE.Vector3(0, 1, 0), // upper check
             0,
-            10.5 // max dist checker
+            futurPos[1] + 2 // max dist checker
             //10  //euclideanDistance(props.player.pos, props.futurPos, true)
         );
-        const intersectsTest: any[] = raycaster.intersectObjects(three.scene.children); //(threeRef.current.scene.children);
+        let intersectsTest: any[] = raycaster.intersectObjects(three.scene.children); //(threeRef.current.scene.children);
+        //console.log("putainde merde tu es trop con")
+        //console.log(intersectsTest)
+       // console.log(intersectsTest.map(e => e.object.name))
+        intersectsTest = intersectsTest.filter(e => (e.object.name === "rampage"))// || (e.object.name === "boxGround"));
+       // console.log(intersectsTest.map(e => e.object.name))
+       // console.log("------")
 
-        console.log("gravity checker");
-        console.log(intersectsTest)
+        let lastElement = intersectsTest[intersectsTest.length - 1];
 
-        // go down directly
-        if (intersectsTest.length && intersectsTest[0].distance > 0.11) {
-            if (intersectsTest[0].distance > 0.01)
-                    futurPos[1] -= 0.01;
-            else
-                    futurPos[1] = intersectsTest[0].point.y
-           // futurPos[1] = intersectsTest[0].point.y;
+        // only ground
+        
+        if (intersectsTest.length === 0) {
+            console.log("fuck of len of 0 .....");
+            console.log(intersectsTest.length)
+            if (futurPos[1] >= 0.1) {
+               // console.log("PREVIOUS VALUE : ", futurPos[1]);
+                futurPos[1] -= 0.05;
+            }
         }
+        else if (false && lastElement) {
+     //   console.log("--g-o-")
+       // console.log(futurPos[1])
+        //console.log(intersectsTest[intersectsTest.length - 1])
+       // console.log(`diff : ${futurPos[1] - lastElement.point.y}`)
+
+        let diffHeight = Math.abs(futurPos[1] - lastElement.point.y);
+        if (diffHeight > 0.1) {
+
+        }
+        //     console.log("gravity checker");
+        //  console.log(intersectsTest)
+        }
+        // go down directly
+        /*
+        if (intersectsTest.length) {// && intersectsTest[0].distance > 0.5) {
+            if (intersectsTest[0].distance > 1) {
+              futurPos[1] -= 0.01;
+              console.log(intersectsTest[0].distance)
+            }
+            //else
+            //    futurPos[1] = intersectsTest[0].point.y
+            // futurPos[1] = intersectsTest[0].point.y;
+        }*/
 
 
         return futurPos;
@@ -227,72 +261,48 @@ const MyPlayer = (props: IMyPlayer) => {
             absMoove = dataFuturPos.absMoove;
             moovementPerform = dataFuturPos.moovementPerform;
         }
-
-        if (!moovementPerform)
-            return;
-
         let isOverlap = false;
-        // base moovement
-        isOverlap = checkIsOverlap({
-            futurPos: futurPos,
-            globalObject: props.globalObject,
-            player: props.player,
-            three: three
-        });
 
-        // get upper pos if possible
-        if (isOverlap) {
-            const newFuturPos = checkUpperCollision({futurPos});
-            if (newFuturPos !== undefined) {
-                isOverlap = false;
-                futurPos = newFuturPos;
-            }
-        }
+        if (moovementPerform) {
 
-        if (isOverlap) return;
-
-        // gravity check
-        futurPos = checkGravity({futurPos});
-
-
-                // gravity check
-        // scene.position.y > 0 : check plan
-
-        
-
-
-        //-----------------------------------
-
-        // check to find upper position
-        /*
-        if (isOverlap) {
-           // futurPos[1] += 15;
-           // absMoove[1] += 15;
+            // base moovement
             isOverlap = checkIsOverlap({
                 futurPos: futurPos,
                 globalObject: props.globalObject,
                 player: props.player,
                 three: three
             });
-            if (isOverlap)
-                return ;
+
+            // get upper pos if possible
+            if (isOverlap) {
+                const newFuturPos = checkUpperCollision({ futurPos });
+                if (newFuturPos !== undefined) {
+                    isOverlap = false;
+                    futurPos = newFuturPos;
+                }
+            }
         }
-        */
+
+        if (isOverlap) return;
+
+        // gravity check
+        futurPos = checkGravity({ futurPos });
 
         // UPDATE POSITION IF NO OVERLAP
         // add to caracter
-        absMoove[0] = futurPos[0] - scene.position.x
-        absMoove[1] = futurPos[1] - scene.position.y
-        absMoove[2] = futurPos[2] - scene.position.z
-        scene.position.x = futurPos[0];
-        scene.position.y = futurPos[1]; // new
-        scene.position.z = futurPos[2];
+        if (futurPos[0] !== scene.position.x || futurPos[1] !== scene.position.y || futurPos[2] !== scene.position.z) {
+            absMoove[0] = futurPos[0] - scene.position.x
+            absMoove[1] = futurPos[1] - scene.position.y
+            absMoove[2] = futurPos[2] - scene.position.z
+            scene.position.x = futurPos[0];
+            scene.position.y = futurPos[1]; // new
+            scene.position.z = futurPos[2];
 
-        props.setPlayer({ ...props.player, pos: futurPos });
+            props.setPlayer({ ...props.player, pos: futurPos });
 
-        // update camera pos - fix that later we don t have y here too
-        updateCameraTarget(absMoove[0], absMoove[1], absMoove[2]);
-
+            // update camera pos - fix that later we don t have y here too
+            updateCameraTarget(absMoove[0], absMoove[1], absMoove[2]);
+        }
     })
 
     return <>

@@ -180,12 +180,11 @@ const subVector = (v1: MyVect3d, v2: MyVect3d): MyVect3d => {
 }
 
 const checkIsOverlap = (props: ICheckIsOverlap): boolean => {
-    //scene.updateMatrixWorld();
     props.three.scene.updateWorldMatrix(true, true);
     let _futurPos: IVect3d = [...props.futurPos];
     let _playerPos: IVect3d = [...props.globalObject.player.pos];
 
-    console.log(`Futur pos : ${JSON.stringify(_futurPos)}`)
+    //console.log(`Futur pos : ${JSON.stringify(_futurPos)}`)
 
     _futurPos[1] += 0.05;
     _playerPos[1] += 0.05;
