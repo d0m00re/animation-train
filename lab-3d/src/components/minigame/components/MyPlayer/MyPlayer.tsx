@@ -147,6 +147,69 @@ const MyPlayer = (props: IMyPlayer) => {
         return { futurPos, absMoove, moovementPerform };
     }
 
+    const checkUpperCollision = ({futurPos} : {futurPos : IVect3d}) : IVect3d | undefined => {
+        const raycaster = new THREE.Raycaster(
+            new THREE.Vector3(...futurPos),
+            new THREE.Vector3(0, 1, 0),
+            0,
+            10.5 // max dist checker
+            //10  //euclideanDistance(props.player.pos, props.futurPos, true)
+        );
+
+        const intersectsTest: any[] = raycaster.intersectObjects(three.scene.children); //(threeRef.current.scene.children);
+
+        const rampage = intersectsTest.filter(e => e.object.name === "rampage");
+        //console.log("New pts checker")
+        // second pts
+        if (rampage.length) {
+          //  console.log("New pts find let s go update our current pos")
+          //  console.log(rampage);
+          //  console.log(intersectsTest)
+            
+            let lastIntersect = rampage[rampage.length - 1];
+           // console.log("last intersect : ")
+           // console.log(lastIntersect)
+            futurPos = [lastIntersect.point.x, lastIntersect.point.y, lastIntersect.point.z];
+            //
+            return futurPos;
+
+        } else {
+      //      console.log("new pts not found bitch")
+       //     console.log(intersectsTest)
+            return undefined
+        }
+    }
+
+    // basic gravity checker
+    const checkGravity = ({futurPos} : {futurPos : IVect3d}) => {
+        // 
+        let dupFuturPos = [...futurPos];
+        dupFuturPos[1] += 0.1;
+        const raycaster = new THREE.Raycaster(
+            new THREE.Vector3(...dupFuturPos),
+            new THREE.Vector3(0, -1, 0), // ground check
+            0,
+            10.5 // max dist checker
+            //10  //euclideanDistance(props.player.pos, props.futurPos, true)
+        );
+        const intersectsTest: any[] = raycaster.intersectObjects(three.scene.children); //(threeRef.current.scene.children);
+
+        console.log("gravity checker");
+        console.log(intersectsTest)
+
+        // go down directly
+        if (intersectsTest.length && intersectsTest[0].distance > 0.11) {
+            if (intersectsTest[0].distance > 0.01)
+                    futurPos[1] -= 0.01;
+            else
+                    futurPos[1] = intersectsTest[0].point.y
+           // futurPos[1] = intersectsTest[0].point.y;
+        }
+
+
+        return futurPos;
+    }
+
     // too may things in it?
     useFrame((state, delta) => {
         let moovementPerform = false;
@@ -165,8 +228,6 @@ const MyPlayer = (props: IMyPlayer) => {
             moovementPerform = dataFuturPos.moovementPerform;
         }
 
-             
-
         if (!moovementPerform)
             return;
 
@@ -181,39 +242,18 @@ const MyPlayer = (props: IMyPlayer) => {
 
         // get upper pos if possible
         if (isOverlap) {
-            const raycaster2 = new THREE.Raycaster(
-                new THREE.Vector3(...futurPos),
-                new THREE.Vector3(0, 1, 0),
-                0,
-                10.5 // max dist checker
-                //10  //euclideanDistance(props.player.pos, props.futurPos, true)
-            );
-
-            const intersectsTest: any[] = raycaster2.intersectObjects(three.scene.children); //(threeRef.current.scene.children);
-
-            const rampage = intersectsTest.filter(e => e.object.name === "rampage");
-            console.log("New pts checker")
-            // second pts
-            if (rampage.length) {
-                console.log("New pts find let s go update our current pos")
-                console.log(rampage);
-                console.log(intersectsTest)
-                
-                let lastIntersect = rampage[rampage.length - 1];
-                console.log("last intersect : ")
-                console.log(lastIntersect)
-                futurPos = [lastIntersect.point.x, lastIntersect.point.y, lastIntersect.point.z];
-                //
+            const newFuturPos = checkUpperCollision({futurPos});
+            if (newFuturPos !== undefined) {
                 isOverlap = false;
-
-            } else {
-                console.log("new pts not found bitch")
-                console.log(intersectsTest)
-                //  return true
+                futurPos = newFuturPos;
             }
         }
 
         if (isOverlap) return;
+
+        // gravity check
+        futurPos = checkGravity({futurPos});
+
 
                 // gravity check
         // scene.position.y > 0 : check plan
