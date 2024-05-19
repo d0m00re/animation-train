@@ -10,12 +10,19 @@ function GenBasicObjRender(props: entity.IGenBasicObjRenderEntity) {
     const { scene } = useGLTF(props.objPath);
 
   return (
-    <object3D position={props.pos} rotation={props.rot}>
+    <object3D position={props.pos} rotation={props.rot} name={props.namePrimitive}>
+        {/*    
         <mesh name={`box${props.name}`} scale={props.boundingBox}>
             <boxGeometry></boxGeometry>
             <meshBasicMaterial color="gray" wireframe />
         </mesh>
-        <primitive object={scene.clone()} ref={meshRef} />
+  */}
+        <primitive
+          name={props.namePrimitive}
+          object={scene.clone()}
+          ref={meshRef}
+        />
+  
     </object3D>
   )
 }

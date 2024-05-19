@@ -8,6 +8,7 @@ import tower from "./tower1V4.glb";
 
 import platform from "./platform.glb";
 
+import rampage from "./rampageV5.glb";
 
 export {
     tree,
@@ -18,5 +19,6 @@ export {
     wall,
     tower,
 
-    platform
+    platform,
+    rampage
 } 

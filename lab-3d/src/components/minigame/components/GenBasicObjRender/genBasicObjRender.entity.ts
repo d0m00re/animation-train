@@ -12,4 +12,5 @@ export interface IGenBasicObjRenderEntity {
 
     objPath : any; // object path could be an import
     name : string; // name of the object use for box[Name]
+    namePrimitive : string;
 }

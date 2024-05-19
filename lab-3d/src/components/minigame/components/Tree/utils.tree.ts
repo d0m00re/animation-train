@@ -7,7 +7,8 @@ type treeType = {
   boundingBox: IVect3d; // bounding area of the tree?
 }
 
-const isOverlaping = (index: number, tree: treeType, trees: treeType[]) => {
+
+const isOverlapingBox = (index: number, tree: treeType, trees: treeType[]) => {
   const minTargetX = tree.position[0] - tree.boundingBox[0] / 2;
   const maxTargetX = tree.position[0] + tree.boundingBox[0] / 2;
   const minTargetZ = tree.position[2] - tree.boundingBox[2] / 2;
@@ -37,6 +38,11 @@ const isOverlaping = (index: number, tree: treeType, trees: treeType[]) => {
   return false;
 };
 
+
+const isOverlaping = (index: number, tree: treeType, trees: treeType[]) => {
+  return false;
+}
+
 const newPosition = (box: number, boundary: number) => {
     return (
       boundary / 2 -
@@ -46,6 +52,7 @@ const newPosition = (box: number, boundary: number) => {
   }
 
 export {
+    isOverlapingBox,
     isOverlaping,
     newPosition
 }

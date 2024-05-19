@@ -15,10 +15,12 @@ function Wall(props: IWallProps) {
 
   return (
     <object3D position={props.wall.pos} rotation={props.wall.rot}>
+      
         <mesh name='boxWall' scale={props.wall.boundingBox}>
             <boxGeometry></boxGeometry>
             <meshBasicMaterial color="gray" wireframe />
         </mesh>
+  
         <primitive object={scene.clone()} ref={meshRef} />
     </object3D>
   )

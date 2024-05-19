@@ -45,7 +45,7 @@ const MyPlayer = (props: IMyPlayer) => {
     const verticalVelocityRef = useRef<number>(0);
     scene.scale.set(0.2, 0.2, 0.2);
 
-    const updateCameraTarget = (moveX: number, moveY : number, moveZ: number) => {
+    const updateCameraTarget = (moveX: number, moveY: number, moveZ: number) => {
         // move camera
         camera.position.y += moveY //= 1.3;
         camera.position.x += moveX;
@@ -102,67 +102,73 @@ const MyPlayer = (props: IMyPlayer) => {
         //  console.log({ forward, backward, left, right, jump, shift})
     }, [forward, backward, left, right, jump, shift]);
 
+    const getPlayerMoovePos = ({ futurPos, delta, moovementPerform }: { futurPos: IVect3d, delta: number, moovementPerform: boolean }) => {
+        let absMoove: IVect3d = [0, 0, 0];
+        moovementPerform = true;
+
+        // calcul next moovements
+        let angleYCameraDirection = Math.atan2(
+            camera.position.x - scene.position.x,
+            camera.position.z - scene.position.z
+        );
+
+        // diagonal movement angle offset
+        let newDirectionOffset = directionOffset({
+            forward,
+            backward,
+            left,
+            right
+        });
+
+        // rotate model
+        rotateQuaternion.setFromAxisAngle(
+            rotateAngle,
+            angleYCameraDirection + newDirectionOffset
+        );
+
+        scene.quaternion.rotateTowards(rotateQuaternion, 0.2)
+
+        // calculate direction
+        camera.getWorldDirection(walkDirection)
+        walkDirection.y = 0
+        walkDirection.normalize()
+        walkDirection.applyAxisAngle(rotateAngle, newDirectionOffset);
+
+        // run/walk velocity
+        const velocity = currentAction.current === animationNameDico.running ? 10 : 5;
+
+        // move model & camera
+        absMoove[0] = walkDirection.x * velocity * delta;
+        absMoove[2] = walkDirection.z * velocity * delta;
+
+        futurPos[0] += absMoove[0];
+        futurPos[2] += absMoove[2];
+
+        return { futurPos, absMoove, moovementPerform };
+    }
+
     // too may things in it?
     useFrame((state, delta) => {
         let moovementPerform = false;
 
         // moove to aplied to the player
         let absMoove: IVect3d = [0, 0, 0];
-
-        let futurPos: IVect3d = [
-            scene.position.x,
-            scene.position.y,
-            scene.position.z
-        ];
+        let futurPos: IVect3d = [scene.position.x, scene.position.y, scene.position.z];
 
         let isPlayerMooving = checkIfPlayerMoove(currentAction);
 
         // find mooveX / mooveZ
         if (isPlayerMooving) {
-            moovementPerform = true;
-
-            // calcul next moovements
-            let angleYCameraDirection = Math.atan2(
-                camera.position.x - scene.position.x,
-                camera.position.z - scene.position.z
-            );
-
-            // diagonal movement angle offset
-            let newDirectionOffset = directionOffset({
-                forward,
-                backward,
-                left,
-                right
-            });
-
-            // rotate model
-            rotateQuaternion.setFromAxisAngle(
-                rotateAngle,
-                angleYCameraDirection + newDirectionOffset
-            );
-
-            scene.quaternion.rotateTowards(rotateQuaternion, 0.2)
-
-            // calculate direction
-            camera.getWorldDirection(walkDirection)
-            walkDirection.y = 0
-            walkDirection.normalize()
-            walkDirection.applyAxisAngle(rotateAngle, newDirectionOffset);
-
-            // run/walk velocity
-            const velocity = currentAction.current === animationNameDico.running ? 10 : 5;
-
-            // move model & camera
-            absMoove[0] = walkDirection.x * velocity * delta;
-            absMoove[2] = walkDirection.z * velocity * delta;
-
-            futurPos[0] += absMoove[0];
-            futurPos[2] += absMoove[2];
+            let dataFuturPos = getPlayerMoovePos({ futurPos, delta, moovementPerform });
+            futurPos = dataFuturPos.futurPos;
+            absMoove = dataFuturPos.absMoove;
+            moovementPerform = dataFuturPos.moovementPerform;
         }
 
         // gravity check
         // scene.position.y > 0 : check plan
 
+        /*
         //-------- J - U - M - P -----------------
         if (jump && verticalVelocityRef.current === 0) {
             console.log("wtf update ref from : ", verticalVelocityRef.current)
@@ -192,32 +198,49 @@ const MyPlayer = (props: IMyPlayer) => {
                 futurPos = dupFuturPos;
             }
         }
+        */
 
         //-----------------------------------
+        if (!moovementPerform)
+            return;
 
-        if (moovementPerform) {
-            //if overlap don t applied new position
-            if (checkIsOverlap({
+        let isOverlap = false;
+        // base moovement
+        isOverlap = checkIsOverlap({
+            futurPos: futurPos,
+            globalObject: props.globalObject,
+            player: props.player,
+            three: three
+        });
+        
+        // check to find upper position
+        if (isOverlap) {
+            console.log("fuck your sister")
+            futurPos[1] += 15;
+            absMoove[1] += 15;
+            console.log("fucking overlap")
+            isOverlap = checkIsOverlap({
                 futurPos: futurPos,
                 globalObject: props.globalObject,
                 player: props.player,
                 three: three
-            })) {
-                console.info("something overlap")
-                return;
-            }
-            // UPDATE POSITION IF NO OVERLAP
-            // add to caracter
-            absMoove[1] = futurPos[1] - scene.position.y
-            scene.position.x = futurPos[0];
-            scene.position.y = futurPos[1]; // new
-            scene.position.z = futurPos[2];
-
-            props.setPlayer({ ...props.player, pos: futurPos });
-
-            // update camera pos - fix that later we don t have y here too
-            updateCameraTarget(absMoove[0], absMoove[1], absMoove[2]);
+            });
+            if (isOverlap)
+                return ;
         }
+
+        // UPDATE POSITION IF NO OVERLAP
+        // add to caracter
+        absMoove[1] = futurPos[1] - scene.position.y
+        scene.position.x = futurPos[0];
+        scene.position.y = futurPos[1]; // new
+        scene.position.z = futurPos[2];
+
+        props.setPlayer({ ...props.player, pos: futurPos });
+
+        // update camera pos - fix that later we don t have y here too
+        updateCameraTarget(absMoove[0], absMoove[1], absMoove[2]);
+
     })
 
     return <>

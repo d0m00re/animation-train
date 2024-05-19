@@ -100,6 +100,20 @@ const Main = () => {
                 boundingBox={wall.boundingBox}
                 objPath={model.wall}
                 name={"Wall"}
+                namePrimitive='WallPrime'
+            />)
+            }
+
+            {objectInfo.rampage.map(rampage => <GenBasicObjRender
+                id={rampage.id}
+                key={`rampage-${rampage.id}`}
+                globalObject={objectInfo}
+                pos={rampage.pos}
+                rot={rampage.rot}
+                boundingBox={rampage.boundingBox}
+                objPath={model.rampage}
+                name={"Rampage"}
+                namePrimitive='RampagePrime'
             />)
             }
 
@@ -112,6 +126,7 @@ const Main = () => {
                 boundingBox={tower.boundingBox}
                 objPath={model.tower}
                 name={"Tower"}
+                namePrimitive='TowerPrime'
             />)
             }
 
@@ -124,6 +139,7 @@ const Main = () => {
                 boundingBox={platform.boundingBox}
                 objPath={model.platform}
                 name={"Platform"}
+                namePrimitive='PlatformPrime'
             />)
             }
 
