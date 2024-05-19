@@ -165,42 +165,8 @@ const MyPlayer = (props: IMyPlayer) => {
             moovementPerform = dataFuturPos.moovementPerform;
         }
 
-        // gravity check
-        // scene.position.y > 0 : check plan
+             
 
-        /*
-        //-------- J - U - M - P -----------------
-        if (jump && verticalVelocityRef.current === 0) {
-            console.log("wtf update ref from : ", verticalVelocityRef.current)
-            verticalVelocityRef.current = 1;
-        }
-
-        if (verticalVelocityRef.current > 0) {
-            console.log(verticalVelocityRef.current)
-            moovementPerform = true;
-            futurPos[1] = incrementByPointOne(futurPos[1], 0.05);
-            verticalVelocityRef.current = decrementByPointOne(verticalVelocityRef.current, 0.05);
-        }
-        //---------------------------------
-        // G-R-A-V-I-T-Y_C-H-E-C-K
-        if (verticalVelocityRef.current <= 0) {
-            let dupFuturPos: IVect3d = [...futurPos];
-            dupFuturPos[1] = decrementByPointOne(dupFuturPos[1], 0.05);
-            // get object
-            let checkObject = getAllSolidObjWtVect3d({
-                three: three,
-                futurPos: dupFuturPos
-            });
-
-            // no object contact so we fall 
-            if (checkObject.length === 0 && scene.position.y > 0) {
-                moovementPerform = true;
-                futurPos = dupFuturPos;
-            }
-        }
-        */
-
-        //-----------------------------------
         if (!moovementPerform)
             return;
 
@@ -212,13 +178,56 @@ const MyPlayer = (props: IMyPlayer) => {
             player: props.player,
             three: three
         });
-        
-        // check to find upper position
+
+        // get upper pos if possible
         if (isOverlap) {
-            console.log("fuck your sister")
-            futurPos[1] += 15;
-            absMoove[1] += 15;
-            console.log("fucking overlap")
+            const raycaster2 = new THREE.Raycaster(
+                new THREE.Vector3(...futurPos),
+                new THREE.Vector3(0, 1, 0),
+                0,
+                10.5 // max dist checker
+                //10  //euclideanDistance(props.player.pos, props.futurPos, true)
+            );
+
+            const intersectsTest: any[] = raycaster2.intersectObjects(three.scene.children); //(threeRef.current.scene.children);
+
+            const rampage = intersectsTest.filter(e => e.object.name === "rampage");
+            console.log("New pts checker")
+            // second pts
+            if (rampage.length) {
+                console.log("New pts find let s go update our current pos")
+                console.log(rampage);
+                console.log(intersectsTest)
+                
+                let lastIntersect = rampage[rampage.length - 1];
+                console.log("last intersect : ")
+                console.log(lastIntersect)
+                futurPos = [lastIntersect.point.x, lastIntersect.point.y, lastIntersect.point.z];
+                //
+                isOverlap = false;
+
+            } else {
+                console.log("new pts not found bitch")
+                console.log(intersectsTest)
+                //  return true
+            }
+        }
+
+        if (isOverlap) return;
+
+                // gravity check
+        // scene.position.y > 0 : check plan
+
+        
+
+
+        //-----------------------------------
+
+        // check to find upper position
+        /*
+        if (isOverlap) {
+           // futurPos[1] += 15;
+           // absMoove[1] += 15;
             isOverlap = checkIsOverlap({
                 futurPos: futurPos,
                 globalObject: props.globalObject,
@@ -228,10 +237,13 @@ const MyPlayer = (props: IMyPlayer) => {
             if (isOverlap)
                 return ;
         }
+        */
 
         // UPDATE POSITION IF NO OVERLAP
         // add to caracter
+        absMoove[0] = futurPos[0] - scene.position.x
         absMoove[1] = futurPos[1] - scene.position.y
+        absMoove[2] = futurPos[2] - scene.position.z
         scene.position.x = futurPos[0];
         scene.position.y = futurPos[1]; // new
         scene.position.z = futurPos[2];
@@ -259,3 +271,36 @@ const MyPlayer = (props: IMyPlayer) => {
 
 
 export default MyPlayer;
+
+/*
+   //-------- J - U - M - P -----------------
+                if (jump && verticalVelocityRef.current === 0) {
+                    console.log("wtf update ref from : ", verticalVelocityRef.current)
+                    verticalVelocityRef.current = 1;
+                }
+        
+                if (verticalVelocityRef.current > 0) {
+                    console.log(verticalVelocityRef.current)
+                    moovementPerform = true;
+                    futurPos[1] = incrementByPointOne(futurPos[1], 0.05);
+                    verticalVelocityRef.current = decrementByPointOne(verticalVelocityRef.current, 0.05);
+                }
+                //---------------------------------
+                // G-R-A-V-I-T-Y_C-H-E-C-K
+                /*
+                if (verticalVelocityRef.current <= 0) {
+                    let dupFuturPos: IVect3d = [...futurPos];
+                    dupFuturPos[1] = decrementByPointOne(dupFuturPos[1], 0.05);
+                    // get object
+                    let checkObject = getAllSolidObjWtVect3d({
+                        three: three,
+                        futurPos: dupFuturPos
+                    });
+        
+                    // no object contact so we fall 
+                    if (checkObject.length === 0 && scene.position.y > 0) {
+                        moovementPerform = true;
+                        futurPos = dupFuturPos;
+                    }
+                }
+                */

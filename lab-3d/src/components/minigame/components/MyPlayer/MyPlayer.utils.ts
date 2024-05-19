@@ -180,13 +180,18 @@ const subVector = (v1: MyVect3d, v2: MyVect3d): MyVect3d => {
 }
 
 const checkIsOverlap = (props: ICheckIsOverlap): boolean => {
+    //scene.updateMatrixWorld();
+    props.three.scene.updateWorldMatrix(true, true);
     let _futurPos: IVect3d = [...props.futurPos];
-    let _playerPos: IVect3d = [...props.player.pos];
+    let _playerPos: IVect3d = [...props.globalObject.player.pos];
+
+    console.log(`Futur pos : ${JSON.stringify(_futurPos)}`)
 
     _futurPos[1] += 0.05;
     _playerPos[1] += 0.05;
 
 
+    let dist = euclideanDistance(props.player.pos, props.futurPos, true);
     let vPos = new THREE.Vector3(..._playerPos);
     let direction = new THREE.Vector3(...subVector(_futurPos, _playerPos)).normalize();
  //   console.log("vector normalize")
@@ -195,8 +200,8 @@ const checkIsOverlap = (props: ICheckIsOverlap): boolean => {
     const raycaster = new THREE.Raycaster(
         vPos,
         direction,
-        1,
-        10
+        0,
+        dist
         //10  //euclideanDistance(props.player.pos, props.futurPos, true)
     );
 
@@ -205,8 +210,37 @@ const checkIsOverlap = (props: ICheckIsOverlap): boolean => {
     const intersects: any[] = raycaster.intersectObjects(props.three.scene.children); //(threeRef.current.scene.children);
 
     if (intersects.length) {
-        console.log("intersect : ", intersects.length)
-        console.log(intersects)
+      //  console.log("intersect : ", intersects.length)
+      //  console.log(intersects)
+       // console.log("dist checkr : ", dist)
+
+        // raycaster new pts
+        /*
+        const raycaster2 = new THREE.Raycaster(
+            new THREE.Vector3(...props.futurPos),
+            new THREE.Vector3(0,1,0),
+            0,
+            10.5 // max dist checker
+            //10  //euclideanDistance(props.player.pos, props.futurPos, true)
+        );
+
+        const intersectsTest: any[] = raycaster2.intersectObjects(props.three.scene.children); //(threeRef.current.scene.children);
+
+        const rampage = intersectsTest.filter(e => e.object.name === "rampage");
+        console.log("New pts checker")
+        // second pts
+        if (rampage.length) {
+            console.log("New pts find let s go update our current pos")
+            console.log(rampage);
+            console.log(intersectsTest)
+          //  return false;
+        } else {
+            console.log("new pts not found bitch")
+            console.log(intersectsTest)
+          //  return true
+        }
+        */
+        return true;
     }
 
     //props.three.scene.add(new THREE.ArrowHelper(direction, vPos, 1))
