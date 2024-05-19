@@ -196,12 +196,7 @@ const MyPlayer = (props: IMyPlayer) => {
             //10  //euclideanDistance(props.player.pos, props.futurPos, true)
         );
         let intersectsTest: any[] = raycaster.intersectObjects(three.scene.children); //(threeRef.current.scene.children);
-        //console.log("putainde merde tu es trop con")
-        //console.log(intersectsTest)
-       // console.log(intersectsTest.map(e => e.object.name))
         intersectsTest = intersectsTest.filter(e => (e.object.name === "rampage"))// || (e.object.name === "boxGround"));
-       // console.log(intersectsTest.map(e => e.object.name))
-       // console.log("------")
 
         let lastElement = intersectsTest[intersectsTest.length - 1];
 
@@ -213,21 +208,23 @@ const MyPlayer = (props: IMyPlayer) => {
             if (futurPos[1] >= 0.1) {
                // console.log("PREVIOUS VALUE : ", futurPos[1]);
                 futurPos[1] -= 0.05;
-            }
+            } else
+                futurPos[1] = 0;
         }
-        else if (false && lastElement) {
-     //   console.log("--g-o-")
-       // console.log(futurPos[1])
-        //console.log(intersectsTest[intersectsTest.length - 1])
-       // console.log(`diff : ${futurPos[1] - lastElement.point.y}`)
+        else if (lastElement) {
 
-        let diffHeight = Math.abs(futurPos[1] - lastElement.point.y);
+        console.log("last elements : ")
+        console.log(lastElement)
+        // difference between 2 height, height of the player and height of the nearest elements
+        let diffHeight = futurPos[1] - lastElement.point.y;
         if (diffHeight > 0.1) {
-
+            futurPos[1] -= 0.1;
+        } else {
+            futurPos[1] = lastElement.point.y + 0.01;
         }
         //     console.log("gravity checker");
         //  console.log(intersectsTest)
-        }
+        //}
         // go down directly
         /*
         if (intersectsTest.length) {// && intersectsTest[0].distance > 0.5) {
@@ -239,7 +236,7 @@ const MyPlayer = (props: IMyPlayer) => {
             //    futurPos[1] = intersectsTest[0].point.y
             // futurPos[1] = intersectsTest[0].point.y;
         }*/
-
+        }
 
         return futurPos;
     }
